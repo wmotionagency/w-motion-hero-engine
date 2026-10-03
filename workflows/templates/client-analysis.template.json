@@ -1,0 +1,45 @@
+{
+  "projectId": "example-client-hero",
+  "sourceUrl": "https://example.com",
+  "brandName": "Example Brand",
+  "businessType": "Premium service business",
+  "location": "Milan, Italy",
+  "offer": "A premium service with a clear visual transformation",
+  "servicesOrProducts": [
+    "Primary service"
+  ],
+  "audience": "Design-conscious customers looking for a premium result",
+  "conversionGoal": "Generate qualified enquiries",
+  "primaryCta": "Parliamo del progetto",
+  "brandTraits": [
+    "premium",
+    "precise",
+    "modern"
+  ],
+  "palette": [
+    "#050816",
+    "#4A9DFF"
+  ],
+  "visualIdentityNotes": [
+    "Dark premium visual language"
+  ],
+  "visualOpportunities": [
+    "Make the service transformation visible through one controlled reveal"
+  ],
+  "constraints": [
+    "Minimal hero copy",
+    "Must work on mobile"
+  ],
+  "availableAssets": [
+    "Logo"
+  ],
+  "currentSiteFriction": [
+    "Weak visual hierarchy"
+  ],
+  "preserve": [
+    "Existing logo"
+  ],
+  "evidenceNotes": [
+    "Example template only. Replace with evidence gathered from the client source."
+  ]
+}

@@ -277,6 +277,7 @@ export const heroSpecSchema = z.object({
   scenes: z.array(sceneSchema).min(1),
   textTimeline: z.array(textCueSchema).default([]),
   motion2d: z.object({
+    background: z.string().optional(),
     preset: z.enum([
       "graphic-clean",
       "editorial",

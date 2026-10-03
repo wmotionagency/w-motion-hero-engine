@@ -16,8 +16,8 @@ export const halleMilanoAnalysis = clientAnalysisSchema.parse({
     "Treatments and styling",
   ],
   audience: "Style-conscious people who value individuality, experimentation and contemporary culture",
-  conversionGoal: "Book an appointment",
-  primaryCta: "Book Now",
+  conversionGoal: "Prenotare un appuntamento",
+  primaryCta: "PRENOTA ORA",
   brandTraits: [
     "genderless",
     "experimental",
@@ -57,6 +57,6 @@ export const halleMilanoAnalysis = clientAnalysisSchema.parse({
     "Genderless cuts and color contrasts are directly supported by the official Team page.",
     "The Zine explicitly centers community, individuality and opposing identity pairs.",
     "RAUM confirms that Halle hosts emerging creative work beyond salon services.",
-    "Booking is inferred as the main conversion goal because Book Now is a primary homepage action.",
+    "La prenotazione è il principale obiettivo di conversione; PRENOTA ORA è la localizzazione italiana della CTA Book Now presente sul sito.",
   ],
 });

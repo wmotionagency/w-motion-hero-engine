@@ -35,6 +35,7 @@ export interface HeroRenderer {
   setProgress(progress: number): void;
   setPointer?(pointer: PointerState): void;
   setSceneState?(sceneState: SceneState): void;
+  setResponsive?(variant: ResponsiveVariant): void;
   resize(): void;
   destroy(): void;
 }

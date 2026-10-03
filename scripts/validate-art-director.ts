@@ -8,6 +8,10 @@ import {
   immersiveProductBrief,
   immersiveProductPlan,
 } from "../src/wmotion/art-director/fixtures/immersive-product";
+import {
+  motionBrandBrief,
+  motionBrandPlan,
+} from "../src/wmotion/art-director/fixtures/motion-brand";
 
 const demo = runArtDirectorDemo();
 
@@ -70,6 +74,31 @@ if (!immersiveAccepted.heroSpec.cinematic25d?.layers.length) {
   throw new Error("Immersive 3D plan is missing its Cinematic 2.5D fallback.");
 }
 
+const motionAccepted = acceptArtDirectorOutput(
+  motionBrandBrief,
+  motionBrandPlan,
+);
+
+if (!motionAccepted.accepted) {
+  throw new Error("Valid Motion 2D Art Direction Plan was unexpectedly rejected.");
+}
+
+if (motionAccepted.heroSpec.renderer !== "motion-2d") {
+  throw new Error("Compiled Hero Spec selected the wrong Motion 2D renderer.");
+}
+
+if (!motionAccepted.heroSpec.motion2d?.elements.length) {
+  throw new Error("Compiled Motion 2D plan has no elements.");
+}
+
+if (!accepted.heroSpec.motion2d?.elements.length) {
+  throw new Error("Cinematic 2.5D plan is missing its Motion 2D fallback.");
+}
+
+if (!immersiveAccepted.heroSpec.motion2d?.elements.length) {
+  throw new Error("Immersive 3D plan is missing its Motion 2D fallback.");
+}
+
 const invalidPlan = structuredClone(automotiveDetailingPlan);
 invalidPlan.mobileStrategy.compositionChange = "";
 
@@ -112,6 +141,12 @@ console.log(
           immersiveAccepted.heroSpec.immersive3d?.camera.keyframes.length ?? 0,
         fallbackLayers:
           immersiveAccepted.heroSpec.cinematic25d?.layers.length ?? 0,
+        motionFallbackElements:
+          immersiveAccepted.heroSpec.motion2d?.elements.length ?? 0,
+      },
+      motion2d: {
+        renderer: motionAccepted.heroSpec.renderer,
+        elements: motionAccepted.heroSpec.motion2d?.elements.length ?? 0,
       },
       invalidPlanRejected: true,
       invalid3DFallbackRejected: true,

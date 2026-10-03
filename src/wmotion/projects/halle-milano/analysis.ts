@@ -18,6 +18,7 @@ export const halleMilanoAnalysis = clientAnalysisSchema.parse({
   audience: "Style-conscious people who value individuality, experimentation and contemporary culture",
   conversionGoal: "Prenotare un appuntamento",
   primaryCta: "PRENOTA ORA",
+  primaryCtaHref: "https://wa.me/3513211726",
   brandTraits: [
     "genderless",
     "experimental",

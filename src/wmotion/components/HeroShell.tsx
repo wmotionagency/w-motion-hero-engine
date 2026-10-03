@@ -12,10 +12,14 @@ import type { HeroSpec } from "@/wmotion/schemas/hero.schema";
 import { HeroTextLayer } from "./HeroTextLayer";
 import { ScrollIndicator } from "./ScrollIndicator";
 
-function createRenderer(type: RendererType): HeroRenderer {
+function createRenderer(type: RendererType, spec: HeroSpec): HeroRenderer {
   if (type === "motion-2d") return new Motion2DRenderer();
   if (type === "immersive-3d") return new Immersive3DRenderer();
-  return new Cinematic25DRenderer();
+
+  return new Cinematic25DRenderer(
+    spec.cinematic25d?.layers ?? [],
+    spec.cinematic25d?.pointerStrength ?? 0.45,
+  );
 }
 
 function selectRenderer(spec: HeroSpec, state?: HeroRuntimeState): RendererType {
@@ -43,6 +47,10 @@ function initialRuntime(spec: HeroSpec): HeroRuntimeState {
     responsive: "desktop",
     reducedMotion: false,
   };
+}
+
+function LayerVisual({ kind }: { kind: string }) {
+  return <span className={`cinematic-shape cinematic-shape--${kind}`} aria-hidden="true" />;
 }
 
 export function HeroShell({ spec }: { spec: HeroSpec }) {
@@ -74,6 +82,7 @@ export function HeroShell({ spec }: { spec: HeroSpec }) {
         responsive: detected.responsive,
         reducedMotion: detected.reducedMotion,
       }),
+      spec,
     );
 
     let trigger: ScrollTrigger | undefined;
@@ -122,7 +131,18 @@ export function HeroShell({ spec }: { spec: HeroSpec }) {
       >
         <div className="hero-sticky">
           <div ref={stageRef} className="hero-stage" data-renderer={spec.renderer}>
-            <div className="demo-orb" data-demo-orb aria-hidden="true" />
+            <div className="cinematic-world" aria-hidden="true">
+              {(spec.cinematic25d?.layers ?? []).map((layer) => (
+                <div
+                  key={layer.id}
+                  className={`cinematic-layer cinematic-layer--${layer.kind} ${layer.className ?? ""}`}
+                  data-layer-id={layer.id}
+                  style={{ zIndex: Math.round(layer.depth * 100) }}
+                >
+                  <LayerVisual kind={layer.kind} />
+                </div>
+              ))}
+            </div>
           </div>
 
           <HeroTextLayer

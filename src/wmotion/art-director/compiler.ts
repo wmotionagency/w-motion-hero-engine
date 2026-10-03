@@ -522,6 +522,8 @@ export function compileArtDirectionPlan(plan: ArtDirectionPlan): HeroSpec {
       eyebrow: plan.copy.eyebrow ?? plan.concept.name,
       headline: plan.copy.headline,
       body: plan.copy.supportingLine,
+      persist: false,
+      final: false,
     },
     ...plan.scenes
       .filter(
@@ -536,6 +538,8 @@ export function compileArtDirectionPlan(plan: ArtDirectionPlan): HeroSpec {
         from: scene.from + (scene.to - scene.from) * 0.2,
         to: scene.from + (scene.to - scene.from) * 0.78,
         headline: scene.textIntent,
+        persist: false,
+        final: false,
       })),
     {
       id: "conversion",

@@ -14,8 +14,8 @@ button, a { font: inherit; }
   position: relative;
   min-height: var(--hero-scroll-length, 350vh);
   background:
-    radial-gradient(circle at 50% 40%, rgba(38, 111, 255, 0.16), transparent 35%),
-    #050816;
+    radial-gradient(circle at 50% 38%, rgba(39, 116, 255, 0.18), transparent 33%),
+    linear-gradient(180deg, #071226 0%, #030816 55%, #050816 100%);
 }
 
 .hero-sticky {
@@ -29,59 +29,165 @@ button, a { font: inherit; }
 .hero-stage {
   position: absolute;
   inset: 0;
-  display: grid;
-  place-items: center;
+  overflow: hidden;
+  perspective: 1100px;
 }
 
-.demo-orb {
-  width: min(34vw, 420px);
+.cinematic-world {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+
+.cinematic-layer {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  will-change: transform, opacity, filter;
+}
+
+.cinematic-shape {
+  display: block;
+  position: relative;
+}
+
+.cinematic-shape--glow {
+  width: 70vw;
   aspect-ratio: 1;
-  border-radius: 999px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(50, 143, 255, .55), rgba(35, 98, 255, .15) 38%, transparent 68%);
+  filter: blur(28px);
+}
+
+.cinematic-shape--grid {
+  width: 120vw;
+  height: 90vh;
+  background-image:
+    linear-gradient(rgba(113, 171, 255, .12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(113, 171, 255, .12) 1px, transparent 1px);
+  background-size: 54px 54px;
+  mask-image: linear-gradient(to bottom, transparent 4%, black 35%, black 78%, transparent 100%);
+  transform: perspective(700px) rotateX(64deg) translateY(24vh);
+}
+
+.cinematic-shape--ring {
+  width: min(48vw, 620px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1px solid rgba(130, 194, 255, .54);
+  box-shadow:
+    inset 0 0 42px rgba(80, 159, 255, .18),
+    0 0 70px rgba(56, 133, 255, .12);
+}
+
+.cinematic-shape--orb {
+  width: min(28vw, 380px);
+  aspect-ratio: 1;
+  border-radius: 50%;
   background:
-    radial-gradient(circle at 35% 28%, rgba(255,255,255,.95), rgba(82,169,255,.8) 12%, rgba(28,102,255,.78) 38%, rgba(11,31,83,.22) 72%, transparent 75%),
-    radial-gradient(circle, rgba(27,118,255,.42), transparent 70%);
-  box-shadow: 0 0 100px rgba(57,130,255,.35);
-  will-change: transform, opacity;
+    radial-gradient(circle at 33% 25%, rgba(255,255,255,.98) 0 4%, rgba(134,205,255,.95) 9%, rgba(42,119,255,.95) 35%, rgba(8,26,65,.78) 67%, rgba(2,8,24,.05) 73%),
+    radial-gradient(circle at 62% 68%, rgba(55, 159, 255, .62), transparent 45%);
+  box-shadow:
+    0 0 70px rgba(48, 132, 255, .48),
+    0 0 180px rgba(34, 89, 255, .24);
+}
+
+.cinematic-shape--panel {
+  width: min(58vw, 820px);
+  height: min(42vh, 430px);
+  border-radius: 32px;
+  border: 1px solid rgba(190, 222, 255, .24);
+  background:
+    linear-gradient(135deg, rgba(255,255,255,.12), rgba(44,104,180,.05)),
+    rgba(10, 25, 55, .24);
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.16),
+    0 24px 80px rgba(0,0,0,.32);
+  backdrop-filter: blur(16px);
+}
+
+.cinematic-shape--panel::before,
+.cinematic-shape--panel::after {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(109,176,255,.9), rgba(109,176,255,.08));
+}
+
+.cinematic-shape--panel::before {
+  width: 38%;
+  height: 7px;
+  top: 26%;
+  left: 10%;
+}
+
+.cinematic-shape--panel::after {
+  width: 55%;
+  height: 3px;
+  top: 36%;
+  left: 10%;
+  opacity: .55;
+}
+
+.cinematic-shape--beam {
+  width: 92vw;
+  height: 18vh;
+  background: linear-gradient(90deg, transparent, rgba(94, 182, 255, .58), rgba(255,255,255,.86), rgba(73,137,255,.34), transparent);
+  filter: blur(18px);
+  transform: skewX(-14deg);
+  opacity: .8;
 }
 
 .hero-copy-layer {
   position: absolute;
   inset: 0;
-  z-index: 5;
+  z-index: 140;
   display: grid;
   place-items: center;
   pointer-events: none;
 }
 
 .hero-copy {
-  max-width: min(900px, calc(100vw - 48px));
+  max-width: min(980px, calc(100vw - 48px));
   text-align: center;
   opacity: 0;
   transform: translateY(28px);
   will-change: transform, opacity;
+  text-shadow: 0 10px 35px rgba(1, 8, 28, .5);
+}
+
+.hero-copy small {
+  display: inline-block;
+  margin-bottom: 18px;
+  text-transform: uppercase;
+  letter-spacing: .18em;
+  font-size: 11px;
+  color: rgba(173, 215, 255, .78);
 }
 
 .hero-copy h1 {
   margin: 0;
-  font-size: clamp(2.6rem, 7vw, 7rem);
-  line-height: .92;
-  letter-spacing: -0.05em;
+  font-size: clamp(3rem, 7.4vw, 7.4rem);
+  line-height: .9;
+  letter-spacing: -0.055em;
 }
 
 .hero-copy p {
-  margin: 20px auto 0;
+  margin: 22px auto 0;
   max-width: 650px;
   color: rgba(238,246,255,.72);
   font-size: clamp(1rem, 2vw, 1.3rem);
 }
 
 .hero-cta {
-  margin-top: 28px;
+  margin-top: 30px;
   display: inline-flex;
   gap: 12px;
   align-items: center;
-  border: 1px solid rgba(255,255,255,.18);
-  background: rgba(255,255,255,.09);
+  border: 1px solid rgba(255,255,255,.2);
+  background: rgba(255,255,255,.1);
   color: white;
   padding: 14px 20px;
   border-radius: 999px;
@@ -90,7 +196,7 @@ button, a { font: inherit; }
 
 .hero-debug {
   position: absolute;
-  z-index: 20;
+  z-index: 200;
   left: 16px;
   bottom: 16px;
   display: grid;
@@ -107,7 +213,7 @@ button, a { font: inherit; }
 
 .scroll-indicator {
   position: absolute;
-  z-index: 10;
+  z-index: 160;
   right: 20px;
   bottom: 20px;
   writing-mode: vertical-rl;
@@ -119,11 +225,39 @@ button, a { font: inherit; }
 
 @media (max-width: 767px) {
   .hero-scroll-zone { --hero-scroll-length: 300vh !important; }
-  .demo-orb { width: 58vw; }
+
+  .cinematic-shape--glow { width: 115vw; }
+  .cinematic-shape--grid {
+    width: 170vw;
+    background-size: 38px 38px;
+  }
+  .cinematic-shape--ring { width: 84vw; }
+  .cinematic-shape--orb { width: 56vw; }
+
   .hero-copy {
     align-self: end;
-    margin-bottom: 14svh;
+    margin-bottom: 13svh;
+    max-width: calc(100vw - 36px);
   }
-  .hero-copy h1 { font-size: clamp(2.6rem, 13vw, 4.7rem); }
-  .hero-debug { min-width: 0; max-width: calc(100vw - 32px); }
+
+  .hero-copy h1 {
+    font-size: clamp(2.7rem, 13vw, 4.8rem);
+    line-height: .93;
+  }
+
+  .hero-copy p {
+    max-width: 90%;
+    font-size: 1rem;
+  }
+
+  .hero-debug {
+    min-width: 0;
+    max-width: calc(100vw - 32px);
+    transform: scale(.88);
+    transform-origin: left bottom;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-indicator { display: none; }
 }

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000">
+  <defs>
+    <filter id="blur"><feGaussianBlur stdDeviation="30"/></filter>
+    <linearGradient id="fog" x1="0" x2="1">
+      <stop offset="0" stop-color="#5cb6ff" stop-opacity="0"/>
+      <stop offset=".45" stop-color="#6bc0ff" stop-opacity=".22"/>
+      <stop offset=".7" stop-color="#9bd6ff" stop-opacity=".09"/>
+      <stop offset="1" stop-color="#5cb6ff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <ellipse cx="800" cy="760" rx="850" ry="170" fill="url(#fog)" filter="url(#blur)"/>
+  <path d="M-80 770 C310 665 580 820 900 715 C1180 625 1360 720 1710 650" fill="none" stroke="#77c8ff" stroke-opacity=".12" stroke-width="42" filter="url(#blur)"/>
+</svg>

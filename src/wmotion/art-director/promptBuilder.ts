@@ -8,6 +8,8 @@ Return one JSON object with this structure:
 {
   "version": "1.0",
   "projectId": "string",
+  "contentLanguage": "string",
+  "market": "optional string",
   "brand": {
     "name": "string",
     "analysis": {
@@ -21,7 +23,8 @@ Return one JSON object with this structure:
   },
   "objective": {
     "conversionGoal": "string",
-    "primaryCta": "string"
+    "primaryCta": "string",
+    "primaryCtaHref": "optional string"
   },
   "concept": {
     "name": "string",
@@ -86,6 +89,11 @@ Return one JSON object with this structure:
     "medium": "string",
     "low": "string",
     "maxCriticalAssets": 4
+  },
+  "conversionStrategy": {
+    "zoneStart": 0.76,
+    "persistentFinalCta": true,
+    "quietFinalState": true
   }
 }
 
@@ -117,7 +125,11 @@ export function buildArtDirectorSystemPrompt() {
     "10. Write minimal hero copy.",
     "11. Design mobile as an intentional variant.",
     "12. Define high/medium/low performance behavior.",
-    "13. Self-check the final plan against the Creative Constitution before returning it.",
+    "13. Reserve roughly the last 20–25% of scroll for a stable conversion state.",
+    "14. Ensure the final CTA remains visible and actionable at progress 1.0.",
+    "15. Write all user-facing copy in the Creative Brief contentLanguage, even when source material uses another language.",
+    "16. Respect market language/conventions without inventing unsupported brand claims.",
+    "17. Self-check the final plan against the Creative Constitution before returning it.",
     "",
     OUTPUT_CONTRACT,
     "",
@@ -133,5 +145,9 @@ export function buildArtDirectorUserPrompt(brief: CreativeBrief) {
     "",
     "The result must be specific enough that a deterministic compiler can convert it into a Hero Spec without inventing the creative concept.",
     "Preserve the supplied conversion goal and primary CTA unless they are impossible or contradictory.",
+    `Write every user-facing text string in language: ${brief.contentLanguage}.`,
+    brief.market ? `Target market: ${brief.market}.` : "Target market: not explicitly specified.",
+    "The final scene must be a conversion scene that reaches progress 1.0.",
+    "The last 20–25% should resolve into a quieter composition with a persistent final CTA.",
   ].join("\n");
 }

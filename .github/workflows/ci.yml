@@ -21,5 +21,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Validate Art Director
+        run: npm run validate:art-director
+
       - name: Build
         run: npm run build

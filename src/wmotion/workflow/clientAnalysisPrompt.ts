@@ -14,6 +14,8 @@ export function buildClientResearchInstructions(sourceUrl: string) {
     "Return a ClientResearchBundle matching the repository schema.",
     "Every meaningful business fact must carry provenance.",
     "Mark each fact as explicit or inferred.",
+    "Capture the actual CTA destination when it is discoverable.",
+    "Resolve contentLanguage and market separately from the source site's language.",
     "Use confidence=high only for directly supported first-party facts.",
     "Do not perform creative direction yet.",
   ].join("\n");
@@ -26,6 +28,8 @@ export function buildClientAnalysisPrompt(bundle: ClientResearchBundle) {
     "Rules:",
     "- Preserve evidence-supported facts.",
     "- If audience, conversionGoal or brandTraits require inference, keep them conservative.",
+    "- Resolve contentLanguage from the intended customer-facing market or explicit instruction, not by blindly copying source language.",
+    "- Preserve primaryCtaHref when it is known.",
     "- Do not invent pricing, awards, scale, customer counts, performance claims or positioning.",
     "- Separate observed current-site friction from creative opportunity.",
     "- Keep visual opportunities specific to the business.",

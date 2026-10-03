@@ -8,7 +8,8 @@ Step 1 — engine core ✅
 Step 2 — configurable Cinematic 2.5D renderer ✅  
 Step 3 — real asset pipeline for Cinematic 2.5D ✅  
 Step 4 — provider-agnostic Art Director brain ✅  
-Step 5 — scrub-driven Immersive 3D renderer ✅
+Step 5 — scrub-driven Immersive 3D renderer ✅  
+Step 6 — production Motion 2D renderer ✅
 
 ## Core capabilities
 
@@ -355,14 +356,88 @@ A valid immersive plan can define 3D-model and shader assets. The compiler gener
 
 An Immersive 3D plan without a lighter fallback is rejected by the quality gate.
 
+## Motion 2D
+
+The engine now includes a production Motion 2D renderer under:
+
+```
+src/wmotion/renderers/motion-2d/
+```
+
+Motion 2D is driven by the same normalized `0 → 1` progress as the other renderers.
+
+It supports:
+
+- circles, rectangles, panels and lines;
+- SVG-like brand marks;
+- image elements;
+- scrubbed position / scale / rotation / opacity / blur;
+- fade, horizontal wipe, vertical wipe and circular reveal;
+- scene-specific visibility;
+- pointer response;
+- desktop / mobile scale and pointer overrides;
+- responsive compositions;
+- image preload;
+- deterministic reverse scrolling.
+
+Motion 2D is also compiled as the universal lightweight fallback for Cinematic 2.5D and Immersive 3D plans.
+
+### 2D demo
+
+Run the project and open:
+
+```
+/2d
+```
+
+The current demo performs:
+
+```
+SIGNAL
+brand mark enters
+        ↓
+MORPH
+graphic line + orbiting element lock into the composition
+        ↓
+RESOLVE
+panel and final brand frame appear
+headline + CTA resolve
+```
+
+### Art Director → Motion 2D
+
+The compiler now produces a `motion2d` Hero Spec for every approved Art Direction Plan.
+
+When Motion 2D is the primary renderer, it uses the asset plan to build graphic elements directly.
+
+When 2.5D or 3D is primary, Motion 2D becomes the low-power / reduced-motion fallback.
+
+Current execution modes:
+
+```
+Motion 2D        ✅
+Cinematic 2.5D   ✅
+Immersive 3D     ✅
+```
+
+Rive remains an optional extension point. The schema reserves a Rive element type, but scroll-scrub control of Rive state machines will be added only when a real Rive asset and state-machine contract are introduced.
+
 ## Next step
 
-The next major step is completing **Motion 2D** as a production renderer, so all three execution modes selected by the Art Director are real:
+All three renderer choices are now real. The next major step is connecting the provider-agnostic Art Director to a real LLM provider, then adding the upstream workflow:
 
 ```
-Motion 2D
-Cinematic 2.5D
-Immersive 3D
+Client URL / business data
+        ↓
+Business analysis
+        ↓
+Creative Brief
+        ↓
+Art Director AI
+        ↓
+Validated Art Direction Plan
+        ↓
+Hero Spec
+        ↓
+W Motion Hero Engine
 ```
-
-After that, the provider layer can be connected to a real LLM without any renderer choice pointing to a placeholder.

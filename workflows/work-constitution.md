@@ -56,3 +56,13 @@ decides WHETHER the rendered result needs correction
 ```
 
 Work must preserve this separation.
+
+
+## Conversion and language rules
+
+- Every commercial hero must reserve a final conversion zone, normally the last 20–25% of scroll.
+- The final CTA must remain visible and clickable at progress 1.0.
+- Final conversion copy must remain visible at progress 1.0.
+- The final state should be calmer than the hero moment so the CTA can dominate.
+- User-facing copy must follow the configured contentLanguage and market, not merely the language found on source pages.
+- Renderer content must not become visible before its initial state is applied.

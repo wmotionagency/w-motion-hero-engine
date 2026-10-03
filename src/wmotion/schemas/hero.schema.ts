@@ -22,6 +22,34 @@ const textCueSchema = z.object({
   message: "Text cue 'to' must be greater than 'from'.",
 });
 
+const transformSchema = z.object({
+  x: z.number().optional(),
+  y: z.number().optional(),
+  scale: z.number().optional(),
+  rotate: z.number().optional(),
+  opacity: z.number().min(0).max(1).optional(),
+  blur: z.number().min(0).optional(),
+});
+
+const keyframeSchema = transformSchema.extend({
+  at: z.number().min(0).max(1),
+});
+
+const cinematicLayerSchema = z.object({
+  id: z.string().min(1),
+  kind: z.enum(["glow", "grid", "ring", "panel", "orb", "beam"]),
+  depth: z.number().min(0).max(1).default(0.5),
+  parallax: z.number().min(0).max(80).default(0),
+  className: z.string().optional(),
+  initial: transformSchema.default({}),
+  keyframes: z.array(keyframeSchema).min(2),
+  mobile: z.object({
+    hidden: z.boolean().optional(),
+    parallax: z.number().min(0).max(80).optional(),
+    scaleMultiplier: z.number().positive().optional(),
+  }).optional(),
+});
+
 const responsiveOverrideSchema = z.object({
   scrollLength: z.number().positive().optional(),
   composition: z.string().optional(),
@@ -38,6 +66,10 @@ export const heroSpecSchema = z.object({
   }),
   scenes: z.array(sceneSchema).min(1),
   textTimeline: z.array(textCueSchema).default([]),
+  cinematic25d: z.object({
+    layers: z.array(cinematicLayerSchema).default([]),
+    pointerStrength: z.number().min(0).max(1).default(0.45),
+  }).optional(),
   performance: z.object({
     highRenderer: z.enum(["motion-2d", "cinematic-25d", "immersive-3d"]).optional(),
     mediumRenderer: z.enum(["motion-2d", "cinematic-25d", "immersive-3d"]).optional(),
@@ -52,3 +84,4 @@ export const heroSpecSchema = z.object({
 
 export type HeroSpec = z.infer<typeof heroSpecSchema>;
 export type HeroTextCue = HeroSpec["textTimeline"][number];
+export type CinematicLayer = NonNullable<HeroSpec["cinematic25d"]>["layers"][number];

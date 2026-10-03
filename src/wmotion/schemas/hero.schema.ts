@@ -18,6 +18,7 @@ const textCueSchema = z.object({
   headline: z.string().optional(),
   body: z.string().optional(),
   ctaLabel: z.string().optional(),
+  ctaHref: z.string().optional(),
 }).refine((cue) => cue.to > cue.from, {
   message: "Text cue 'to' must be greater than 'from'.",
 });

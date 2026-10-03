@@ -24,37 +24,36 @@ Do not ask for information that can be reasonably recovered from the supplied we
 
 ---
 
-# Phase 1 — Client Analysis
+# Phase 1 — Client URL Research + Client Analysis
 
-When a client URL is supplied, inspect the official website and relevant first-party material.
+When a client URL is supplied, first follow:
 
-Extract only evidence-supported information.
+`workflows/analyze-client-url.md`
 
-Create a Client Analysis compatible with:
+The upstream research flow is mandatory:
 
-`src/wmotion/workflow/schemas.ts -> clientAnalysisSchema`
+```
+URL
+↓
+ClientResearchBundle
+↓
+research quality gate
+↓
+Client Analysis
+↓
+analysis quality gate
+```
 
-Capture:
+Do not jump directly from an URL to a Creative Brief.
 
-- projectId
-- sourceUrl
-- brandName
-- businessType
-- location if relevant
-- offer
-- services/products
-- audience
-- conversionGoal
-- primaryCta
-- brandTraits
-- palette
-- visualIdentityNotes
-- visualOpportunities
-- constraints
-- availableAssets
-- currentSiteFriction
-- preserve
-- evidenceNotes
+Use:
+
+- `clientResearchBundleSchema`
+- `validateClientResearchBundle()`
+- `clientAnalysisSchema`
+- `validateClientAnalysisAgainstResearch()`
+
+Only evidence-backed or explicitly labelled inferred facts may enter the Client Analysis.
 
 Never invent unavailable facts.
 

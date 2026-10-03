@@ -17,7 +17,8 @@
   },
   "objective": {
     "conversionGoal": "Generate qualified enquiries",
-    "primaryCta": "Parliamo del progetto"
+    "primaryCta": "Parliamo del progetto",
+    "primaryCtaHref": "#contact"
   },
   "concept": {
     "name": "Controlled Reveal",
@@ -119,5 +120,12 @@
     "medium": "Keep critical layers and reduce secondary motion.",
     "low": "Use Motion 2D fallback with a simple reveal and clear CTA.",
     "maxCriticalAssets": 3
+  },
+  "contentLanguage": "it",
+  "market": "IT",
+  "conversionStrategy": {
+    "zoneStart": 0.76,
+    "persistentFinalCta": true,
+    "quietFinalState": true
   }
 }

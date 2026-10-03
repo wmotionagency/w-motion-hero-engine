@@ -1,17 +1,61 @@
 import { gsap } from "gsap";
-import type { HeroRenderer, PointerState, SceneState } from "@/wmotion/core/types";
+import type { HeroRenderer, PointerState, ResponsiveVariant, SceneState } from "@/wmotion/core/types";
+import type { CinematicLayer } from "@/wmotion/schemas/hero.schema";
+
+type LayerEl = {
+  spec: CinematicLayer;
+  el: HTMLElement;
+};
+
+function lerp(a = 0, b = 0, t: number) {
+  return a + (b - a) * t;
+}
+
+function sampleLayer(layer: CinematicLayer, progress: number) {
+  const frames = layer.keyframes;
+  if (progress <= frames[0].at) return { ...layer.initial, ...frames[0] };
+  if (progress >= frames[frames.length - 1].at) return { ...layer.initial, ...frames[frames.length - 1] };
+
+  const nextIndex = frames.findIndex((frame) => progress <= frame.at);
+  const a = frames[Math.max(0, nextIndex - 1)];
+  const b = frames[nextIndex];
+  const span = Math.max(0.0001, b.at - a.at);
+  const t = (progress - a.at) / span;
+
+  return {
+    x: lerp(a.x ?? layer.initial.x ?? 0, b.x ?? a.x ?? layer.initial.x ?? 0, t),
+    y: lerp(a.y ?? layer.initial.y ?? 0, b.y ?? a.y ?? layer.initial.y ?? 0, t),
+    scale: lerp(a.scale ?? layer.initial.scale ?? 1, b.scale ?? a.scale ?? layer.initial.scale ?? 1, t),
+    rotate: lerp(a.rotate ?? layer.initial.rotate ?? 0, b.rotate ?? a.rotate ?? layer.initial.rotate ?? 0, t),
+    opacity: lerp(a.opacity ?? layer.initial.opacity ?? 1, b.opacity ?? a.opacity ?? layer.initial.opacity ?? 1, t),
+    blur: lerp(a.blur ?? layer.initial.blur ?? 0, b.blur ?? a.blur ?? layer.initial.blur ?? 0, t),
+  };
+}
 
 export class Cinematic25DRenderer implements HeroRenderer {
   private root?: HTMLElement;
-  private orb?: HTMLElement;
+  private layers: LayerEl[] = [];
   private progress = 0;
   private pointer: PointerState = { x: 0, y: 0 };
+  private responsive: ResponsiveVariant = "desktop";
+  private sceneState?: SceneState;
+
+  constructor(
+    private readonly layerSpecs: CinematicLayer[] = [],
+    private readonly pointerStrength = 0.45,
+  ) {}
 
   async preload() {}
 
   mount(container: HTMLElement) {
     this.root = container;
-    this.orb = container.querySelector<HTMLElement>("[data-demo-orb]") ?? undefined;
+    this.layers = this.layerSpecs
+      .map((spec) => {
+        const el = container.querySelector<HTMLElement>(`[data-layer-id="${spec.id}"]`);
+        return el ? { spec, el } : null;
+      })
+      .filter((entry): entry is LayerEl => Boolean(entry));
+
     this.render();
   }
 
@@ -25,38 +69,60 @@ export class Cinematic25DRenderer implements HeroRenderer {
     this.render();
   }
 
-  setSceneState(_sceneState: SceneState) {}
+  setSceneState(sceneState: SceneState) {
+    this.sceneState = sceneState;
+    if (this.root) {
+      this.root.dataset.scene = sceneState.scene.id;
+      this.root.style.setProperty("--wm-scene-progress", sceneState.localProgress.toFixed(4));
+    }
+  }
+
+  setResponsive(variant: ResponsiveVariant) {
+    this.responsive = variant;
+    this.render();
+  }
 
   resize() {
     this.render();
   }
 
   destroy() {
-    if (this.orb) gsap.killTweensOf(this.orb);
+    this.layers.forEach(({ el }) => gsap.killTweensOf(el));
+    this.layers = [];
     this.root = undefined;
-    this.orb = undefined;
   }
 
   private render() {
-    if (!this.orb) return;
+    if (!this.root) return;
 
-    const p = this.progress;
-    const scale = 0.72 + p * 1.2;
-    const travelX = p < 0.66 ? (p / 0.66) * 18 : 18 - ((p - 0.66) / 0.34) * 12;
-    const travelY = p < 0.5 ? (0.5 - p) * 80 : -(p - 0.5) * 90;
-    const rotate = -10 + p * 26 + this.pointer.x * 4;
-    const pointerX = this.pointer.x * 18;
-    const pointerY = this.pointer.y * 12;
+    this.root.style.setProperty("--wm-progress", this.progress.toFixed(4));
 
-    gsap.set(this.orb, {
-      xPercent: travelX,
-      y: travelY + pointerY,
-      x: pointerX,
-      scale,
-      rotate,
-      opacity: p > 0.92 ? Math.max(0.15, 1 - (p - 0.92) * 5) : 1,
-      transformOrigin: "50% 50%",
-      force3D: true,
-    });
+    for (const { spec, el } of this.layers) {
+      const sampled = sampleLayer(spec, this.progress);
+      const mobile = this.responsive === "mobile" ? spec.mobile : undefined;
+
+      if (mobile?.hidden) {
+        gsap.set(el, { display: "none" });
+        continue;
+      }
+
+      const parallax = mobile?.parallax ?? spec.parallax;
+      const depthFactor = 0.35 + spec.depth * 0.9;
+      const pointerX = this.pointer.x * parallax * this.pointerStrength * depthFactor;
+      const pointerY = this.pointer.y * parallax * this.pointerStrength * depthFactor;
+      const scaleMultiplier = mobile?.scaleMultiplier ?? 1;
+
+      gsap.set(el, {
+        display: "block",
+        x: sampled.x + pointerX,
+        y: sampled.y + pointerY,
+        scale: sampled.scale * scaleMultiplier,
+        rotate: sampled.rotate,
+        opacity: sampled.opacity,
+        filter: sampled.blur ? `blur(${sampled.blur}px)` : "none",
+        force3D: true,
+        transformOrigin: "50% 50%",
+      });
+    }
   }
 }

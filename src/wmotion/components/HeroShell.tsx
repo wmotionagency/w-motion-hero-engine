@@ -150,6 +150,12 @@ function Motion2DVisual({
     borderRadius: element.style.borderRadius,
     color: element.style.color,
     boxShadow: element.style.boxShadow,
+    fontSize: element.style.fontSize,
+    fontWeight: element.style.fontWeight,
+    letterSpacing: element.style.letterSpacing,
+    lineHeight: element.style.lineHeight,
+    textAlign: element.style.textAlign,
+    textTransform: element.style.textTransform,
   };
 
   if (element.kind === "image" && element.asset) {
@@ -185,6 +191,14 @@ function Motion2DVisual({
       <span className="motion2d-svg-mark" style={style} aria-hidden="true">
         <span />
         <span />
+      </span>
+    );
+  }
+
+  if (element.kind === "text") {
+    return (
+      <span className="motion2d-text" style={style} aria-hidden="true">
+        {element.label ?? ""}
       </span>
     );
   }

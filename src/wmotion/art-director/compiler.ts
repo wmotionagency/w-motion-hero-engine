@@ -283,6 +283,7 @@ function compileMotion2D(plan: ArtDirectionPlan) {
       id: "motion-accent-line",
       kind: "line" as const,
       role: "effect" as const,
+      label: undefined,
       style: {
         width: "min(70vw, 960px)",
         height: "2px",

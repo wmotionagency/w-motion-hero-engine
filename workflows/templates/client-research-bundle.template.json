@@ -1,0 +1,104 @@
+{
+  "projectId": "example-client-hero",
+  "requestedUrl": "https://example.com",
+  "canonicalUrl": "https://example.com",
+  "pages": [
+    {
+      "url": "https://example.com",
+      "title": "Example Brand",
+      "sourceType": "official-website",
+      "purpose": "identity",
+      "notes": [
+        "Homepage establishes the brand and primary service."
+      ]
+    },
+    {
+      "url": "https://example.com/services",
+      "title": "Services — Example Brand",
+      "sourceType": "official-website",
+      "purpose": "services",
+      "notes": [
+        "Primary service hierarchy is listed here."
+      ]
+    },
+    {
+      "url": "https://example.com/contact",
+      "title": "Contact — Example Brand",
+      "sourceType": "official-website",
+      "purpose": "conversion",
+      "notes": [
+        "Contact page confirms the primary enquiry action."
+      ]
+    }
+  ],
+  "facts": [
+    {
+      "field": "brandName",
+      "value": "Example Brand",
+      "sourceUrl": "https://example.com",
+      "status": "explicit",
+      "confidence": "high",
+      "rationale": "Brand name is displayed in the site header."
+    },
+    {
+      "field": "businessType",
+      "value": "Premium service business",
+      "sourceUrl": "https://example.com",
+      "status": "explicit",
+      "confidence": "high",
+      "rationale": "Homepage explicitly describes the company category."
+    },
+    {
+      "field": "offer",
+      "value": "Premium transformation service",
+      "sourceUrl": "https://example.com/services",
+      "status": "explicit",
+      "confidence": "high",
+      "rationale": "Primary service page defines the offer."
+    },
+    {
+      "field": "servicesOrProducts",
+      "value": "Primary service",
+      "sourceUrl": "https://example.com/services",
+      "status": "explicit",
+      "confidence": "high",
+      "rationale": "Service is listed directly."
+    },
+    {
+      "field": "primaryCta",
+      "value": "Contact us",
+      "sourceUrl": "https://example.com/contact",
+      "status": "explicit",
+      "confidence": "high",
+      "rationale": "Contact page uses this action."
+    },
+    {
+      "field": "conversionGoal",
+      "value": "Generate qualified enquiries",
+      "sourceUrl": "https://example.com/contact",
+      "status": "inferred",
+      "confidence": "medium",
+      "rationale": "The site consistently directs visitors toward an enquiry flow."
+    },
+    {
+      "field": "audience",
+      "value": "Customers looking for a premium result",
+      "sourceUrl": "https://example.com",
+      "status": "inferred",
+      "confidence": "medium",
+      "rationale": "Offer language and visual positioning indicate a premium customer segment."
+    },
+    {
+      "field": "visualOpportunities",
+      "value": "Express the service transformation through one controlled reveal",
+      "sourceUrl": "https://example.com/services",
+      "status": "inferred",
+      "confidence": "medium",
+      "rationale": "The service has a clear before/after value that can be visualised."
+    }
+  ],
+  "unresolvedQuestions": [],
+  "researchNotes": [
+    "Template only. Replace with real browsing evidence."
+  ]
+}

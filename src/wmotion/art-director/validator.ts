@@ -69,6 +69,43 @@ export function validateArtDirectionPlan(
     }
   }
 
+  const finalScene = sorted[sorted.length - 1];
+  if (finalScene.purpose !== "conversion") {
+    issues.push({
+      severity: "error",
+      code: "final-scene-conversion",
+      message: "The final scene must be an explicit conversion scene.",
+    });
+    score -= 20;
+  }
+
+  if (finalScene.from > plan.conversionStrategy.zoneStart + 0.001) {
+    issues.push({
+      severity: "error",
+      code: "conversion-zone-late",
+      message: "The conversion scene must begin by the declared conversion-zone start.",
+    });
+    score -= 15;
+  }
+
+  if (!plan.conversionStrategy.persistentFinalCta) {
+    issues.push({
+      severity: "error",
+      code: "persistent-cta-required",
+      message: "The final CTA must persist through progress 1.0.",
+    });
+    score -= 20;
+  }
+
+  if (!plan.conversionStrategy.quietFinalState) {
+    issues.push({
+      severity: "warning",
+      code: "quiet-final-state",
+      message: "The final conversion state should reduce visual noise and prioritize the CTA.",
+    });
+    score -= 6;
+  }
+
   if (!plan.concept.heroMoment.trim()) {
     issues.push({
       severity: "error",
@@ -115,6 +152,24 @@ export function validateArtDirectionPlan(
       message: "A primary CTA is required.",
     });
     score -= 25;
+  }
+
+  if (brief && plan.contentLanguage !== brief.contentLanguage) {
+    issues.push({
+      severity: "error",
+      code: "language-drift",
+      message: "Art direction contentLanguage must match the supplied Creative Brief.",
+    });
+    score -= 20;
+  }
+
+  if (brief && brief.market && plan.market && plan.market !== brief.market) {
+    issues.push({
+      severity: "warning",
+      code: "market-drift",
+      message: "Art direction market differs from the supplied Creative Brief.",
+    });
+    score -= 5;
   }
 
   if (brief && plan.objective.conversionGoal !== brief.conversionGoal) {

@@ -14,12 +14,21 @@ import type {
 import { Cinematic25DRenderer } from "@/wmotion/renderers/cinematic-25d/Cinematic25DRenderer";
 import { Immersive3DRenderer } from "@/wmotion/renderers/immersive-3d/Immersive3DRenderer";
 import { Motion2DRenderer } from "@/wmotion/renderers/motion-2d/Motion2DRenderer";
-import type { CinematicLayer, HeroSpec } from "@/wmotion/schemas/hero.schema";
+import type {
+  CinematicLayer,
+  HeroSpec,
+  Motion2DElement,
+} from "@/wmotion/schemas/hero.schema";
 import { HeroTextLayer } from "./HeroTextLayer";
 import { ScrollIndicator } from "./ScrollIndicator";
 
 function createRenderer(type: RendererType, spec: HeroSpec): HeroRenderer {
-  if (type === "motion-2d") return new Motion2DRenderer();
+  if (type === "motion-2d") {
+    return new Motion2DRenderer(
+      spec.motion2d?.elements ?? [],
+      spec.motion2d?.pointerStrength ?? 0.2,
+    );
+  }
 
   if (type === "immersive-3d") {
     return new Immersive3DRenderer(spec.immersive3d);
@@ -123,6 +132,82 @@ function LayerVisual({
   );
 }
 
+
+function Motion2DVisual({
+  element,
+  responsive,
+}: {
+  element: Motion2DElement;
+  responsive: ResponsiveVariant;
+}) {
+  const style: React.CSSProperties = {
+    width: element.style.width,
+    height: element.style.height,
+    background: element.style.background,
+    borderColor: element.style.borderColor,
+    borderWidth: element.style.borderWidth,
+    borderStyle: element.style.borderWidth ? "solid" : undefined,
+    borderRadius: element.style.borderRadius,
+    color: element.style.color,
+    boxShadow: element.style.boxShadow,
+  };
+
+  if (element.kind === "image" && element.asset) {
+    const src =
+      responsive === "mobile" && element.mobile?.assetSrc
+        ? element.mobile.assetSrc
+        : element.asset.src;
+
+    return (
+      <span className="motion2d-asset" style={style} aria-hidden="true">
+        <Image
+          src={src}
+          alt={element.asset.alt}
+          fill
+          sizes="100vw"
+          priority={element.asset.preload}
+          unoptimized={src.endsWith(".svg")}
+          style={{
+            objectFit: element.asset.fit,
+            objectPosition: element.asset.position,
+          }}
+        />
+      </span>
+    );
+  }
+
+  if (element.kind === "line") {
+    return <span className="motion2d-line" style={style} aria-hidden="true" />;
+  }
+
+  if (element.kind === "svg-mark") {
+    return (
+      <span className="motion2d-svg-mark" style={style} aria-hidden="true">
+        <span />
+        <span />
+      </span>
+    );
+  }
+
+  if (element.kind === "rive") {
+    return (
+      <span className="motion2d-rive-placeholder" style={style} aria-hidden="true">
+        {element.label ?? "RIVE"}
+      </span>
+    );
+  }
+
+  return (
+    <span
+      className={`motion2d-primitive motion2d-primitive--${element.kind}`}
+      style={style}
+      aria-hidden="true"
+    >
+      {element.label ? <span className="motion2d-label">{element.label}</span> : null}
+    </span>
+  );
+}
+
 export function HeroShell({ spec }: { spec: HeroSpec }) {
   const zoneRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -198,7 +283,10 @@ export function HeroShell({ spec }: { spec: HeroSpec }) {
     };
   }, [controller, spec]);
 
-  const preset = spec.cinematic25d?.preset ?? "neutral";
+  const preset =
+    activeRenderer === "motion-2d"
+      ? spec.motion2d?.preset ?? "graphic-clean"
+      : spec.cinematic25d?.preset ?? "neutral";
 
   return (
     <main>
@@ -219,6 +307,29 @@ export function HeroShell({ spec }: { spec: HeroSpec }) {
             data-active-renderer={activeRenderer}
             data-preset={preset}
           >
+            {activeRenderer === "motion-2d" ? (
+              <div
+                className="motion2d-world"
+                data-preset={spec.motion2d?.preset ?? "graphic-clean"}
+                aria-hidden="true"
+              >
+                {(spec.motion2d?.elements ?? []).map((element, index) => (
+                  <div
+                    key={element.id}
+                    className={`motion2d-element motion2d-element--${element.kind} motion2d-element--role-${element.role}`}
+                    data-motion-id={element.id}
+                    data-role={element.role}
+                    style={{ zIndex: 20 + index * 10 }}
+                  >
+                    <Motion2DVisual
+                      element={element}
+                      responsive={runtime.responsive}
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : null}
+
             {activeRenderer === "cinematic-25d" ? (
               <div
                 className="cinematic-world"

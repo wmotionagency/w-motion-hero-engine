@@ -35,19 +35,77 @@ const keyframeSchema = transformSchema.extend({
   at: z.number().min(0).max(1),
 });
 
+const assetSchema = z.object({
+  src: z.string().min(1),
+  alt: z.string().default(""),
+  fit: z.enum(["cover", "contain"]).default("contain"),
+  position: z.string().default("50% 50%"),
+  preload: z.boolean().default(false),
+});
+
+const visibilitySchema = z.object({
+  scenes: z.array(z.string().min(1)).optional(),
+  from: z.number().min(0).max(1).optional(),
+  to: z.number().min(0).max(1).optional(),
+}).refine((value) => {
+  if (value.from === undefined || value.to === undefined) return true;
+  return value.to > value.from;
+}, {
+  message: "Layer visibility 'to' must be greater than 'from'.",
+});
+
+const revealSchema = z.object({
+  type: z.enum(["none", "fade", "wipe-x", "wipe-y", "circle"]).default("none"),
+  from: z.number().min(0).max(1).default(0),
+  to: z.number().min(0).max(1).default(1),
+  invert: z.boolean().default(false),
+}).refine((value) => value.to > value.from, {
+  message: "Reveal 'to' must be greater than 'from'.",
+});
+
 const cinematicLayerSchema = z.object({
   id: z.string().min(1),
-  kind: z.enum(["glow", "grid", "ring", "panel", "orb", "beam"]),
+  kind: z.enum([
+    "glow",
+    "grid",
+    "ring",
+    "panel",
+    "orb",
+    "beam",
+    "image",
+  ]),
+  role: z.enum(["background", "subject", "foreground", "effect"]).default("effect"),
   depth: z.number().min(0).max(1).default(0.5),
   parallax: z.number().min(0).max(80).default(0),
   className: z.string().optional(),
+  blendMode: z.enum([
+    "normal",
+    "screen",
+    "multiply",
+    "overlay",
+    "soft-light",
+    "lighten",
+  ]).default("normal"),
+  asset: assetSchema.optional(),
+  visibility: visibilitySchema.optional(),
+  reveal: revealSchema.optional(),
   initial: transformSchema.default({}),
   keyframes: z.array(keyframeSchema).min(2),
   mobile: z.object({
     hidden: z.boolean().optional(),
     parallax: z.number().min(0).max(80).optional(),
     scaleMultiplier: z.number().positive().optional(),
+    assetSrc: z.string().min(1).optional(),
+    position: z.string().optional(),
   }).optional(),
+}).superRefine((layer, ctx) => {
+  if (layer.kind === "image" && !layer.asset) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Image layers require an asset.",
+      path: ["asset"],
+    });
+  }
 });
 
 const responsiveOverrideSchema = z.object({
@@ -67,6 +125,13 @@ export const heroSpecSchema = z.object({
   scenes: z.array(sceneSchema).min(1),
   textTimeline: z.array(textCueSchema).default([]),
   cinematic25d: z.object({
+    preset: z.enum([
+      "neutral",
+      "luxury-dark",
+      "editorial-light",
+      "product-reveal",
+      "spatial-ui",
+    ]).default("neutral"),
     layers: z.array(cinematicLayerSchema).default([]),
     pointerStrength: z.number().min(0).max(1).default(0.45),
   }).optional(),

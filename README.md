@@ -759,3 +759,21 @@ Validate with:
 ```bash
 npm run validate:halle-test
 ```
+
+
+## Conversion-first hero rules
+
+The engine now treats conversion as a final state rather than a temporary animation cue.
+
+For commercial Hero Specs:
+
+- `contentLanguage` and `market` travel from Client Analysis to Creative Brief and Art Direction;
+- CTA destinations may travel from Client Analysis through the compiler;
+- the final 20–25% of the hero is a conversion zone;
+- the final cue is persistent and remains visible at progress 1.0;
+- the CTA must be actionable;
+- the final composition is expected to reduce visual competition;
+- a Hero Conversion Validator rejects broken final states;
+- the renderer visual world remains hidden until its initial state has been applied, preventing first-load flashes.
+
+The Halle Milano test now uses Italian copy and a persistent **PRENOTA ORA** final state.

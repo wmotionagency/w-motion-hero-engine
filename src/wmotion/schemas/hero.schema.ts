@@ -108,6 +108,76 @@ const cinematicLayerSchema = z.object({
   }
 });
 
+const vec3Schema = z.tuple([z.number(), z.number(), z.number()]);
+
+const threeTransformKeyframeSchema = z.object({
+  at: z.number().min(0).max(1),
+  position: vec3Schema.optional(),
+  rotation: vec3Schema.optional(),
+  scale: vec3Schema.optional(),
+  opacity: z.number().min(0).max(1).optional(),
+});
+
+const cameraKeyframeSchema = z.object({
+  at: z.number().min(0).max(1),
+  position: vec3Schema,
+  target: vec3Schema,
+  fov: z.number().min(20).max(100).optional(),
+});
+
+const threeMaterialSchema = z.object({
+  color: z.string().default("#4a9dff"),
+  metalness: z.number().min(0).max(1).default(0.35),
+  roughness: z.number().min(0).max(1).default(0.28),
+  emissive: z.string().default("#000000"),
+  emissiveIntensity: z.number().min(0).max(8).default(0),
+  transparent: z.boolean().default(false),
+  opacity: z.number().min(0).max(1).default(1),
+  wireframe: z.boolean().default(false),
+});
+
+const threeObjectSchema = z.object({
+  id: z.string().min(1),
+  kind: z.enum(["sphere", "box", "torus", "icosahedron", "model"]),
+  role: z.enum(["subject", "environment", "effect"]).default("subject"),
+  modelSrc: z.string().min(1).optional(),
+  material: threeMaterialSchema.default({}),
+  visibility: visibilitySchema.optional(),
+  keyframes: z.array(threeTransformKeyframeSchema).min(2),
+  pointerInfluence: z.number().min(0).max(1).default(0.15),
+  castShadow: z.boolean().default(false),
+  receiveShadow: z.boolean().default(false),
+  mobile: z.object({
+    hidden: z.boolean().optional(),
+    scaleMultiplier: z.number().positive().optional(),
+  }).optional(),
+}).superRefine((object, ctx) => {
+  if (object.kind === "model" && !object.modelSrc) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "3D model objects require modelSrc.",
+      path: ["modelSrc"],
+    });
+  }
+});
+
+const threeLightSchema = z.object({
+  id: z.string().min(1),
+  type: z.enum(["ambient", "directional", "point"]),
+  color: z.string().default("#ffffff"),
+  intensity: z.number().min(0).max(20).default(1),
+  position: vec3Schema.optional(),
+});
+
+const threeParticlesSchema = z.object({
+  enabled: z.boolean().default(false),
+  count: z.number().min(0).max(1200).default(180),
+  spread: z.number().min(1).max(30).default(10),
+  size: z.number().min(0.005).max(0.2).default(0.025),
+  color: z.string().default("#78bfff"),
+  opacity: z.number().min(0).max(1).default(0.45),
+});
+
 const responsiveOverrideSchema = z.object({
   scrollLength: z.number().positive().optional(),
   composition: z.string().optional(),
@@ -135,6 +205,26 @@ export const heroSpecSchema = z.object({
     layers: z.array(cinematicLayerSchema).default([]),
     pointerStrength: z.number().min(0).max(1).default(0.45),
   }).optional(),
+  immersive3d: z.object({
+    background: z.string().default("#02050d"),
+    fog: z.object({
+      color: z.string().default("#02050d"),
+      near: z.number().positive().default(6),
+      far: z.number().positive().default(20),
+    }).optional(),
+    camera: z.object({
+      keyframes: z.array(cameraKeyframeSchema).min(2),
+      pointerStrength: z.number().min(0).max(1).default(0.18),
+    }),
+    objects: z.array(threeObjectSchema).min(1),
+    lights: z.array(threeLightSchema).min(1),
+    particles: threeParticlesSchema.optional(),
+    pixelRatio: z.object({
+      high: z.number().min(0.75).max(2).default(1.5),
+      medium: z.number().min(0.75).max(1.5).default(1),
+      mobile: z.number().min(0.75).max(1.25).default(1),
+    }).default({}),
+  }).optional(),
   performance: z.object({
     highRenderer: z.enum(["motion-2d", "cinematic-25d", "immersive-3d"]).optional(),
     mediumRenderer: z.enum(["motion-2d", "cinematic-25d", "immersive-3d"]).optional(),
@@ -150,3 +240,5 @@ export const heroSpecSchema = z.object({
 export type HeroSpec = z.infer<typeof heroSpecSchema>;
 export type HeroTextCue = HeroSpec["textTimeline"][number];
 export type CinematicLayer = NonNullable<HeroSpec["cinematic25d"]>["layers"][number];
+export type Immersive3DSpec = NonNullable<HeroSpec["immersive3d"]>;
+export type Immersive3DObject = Immersive3DSpec["objects"][number];

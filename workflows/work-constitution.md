@@ -32,6 +32,9 @@ This file defines the operational rules that ChatGPT Work must follow when creat
 18. When QA finds a local issue, patch the smallest relevant parameter first.
 19. Regenerate the concept only when the problem is structural.
 20. Preserve reversibility of scroll-driven motion unless a documented interaction requires otherwise.
+21. Source evidence may not be altered to make a Client Analysis pass validation.
+22. Explicit facts and inferred conclusions must remain distinguishable.
+23. Work must prefer first-party evidence and preserve the canonical business identity before creative interpretation.
 
 ## Separation of responsibilities
 

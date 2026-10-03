@@ -108,6 +108,72 @@ const cinematicLayerSchema = z.object({
   }
 });
 
+
+const motion2dStyleSchema = z.object({
+  width: z.string().optional(),
+  height: z.string().optional(),
+  background: z.string().optional(),
+  borderColor: z.string().optional(),
+  borderWidth: z.number().min(0).max(20).optional(),
+  borderRadius: z.string().optional(),
+  color: z.string().optional(),
+  boxShadow: z.string().optional(),
+  mixBlendMode: z.enum([
+    "normal",
+    "screen",
+    "multiply",
+    "overlay",
+    "soft-light",
+    "lighten",
+  ]).default("normal"),
+});
+
+const motion2dElementSchema = z.object({
+  id: z.string().min(1),
+  kind: z.enum([
+    "circle",
+    "rect",
+    "line",
+    "panel",
+    "image",
+    "svg-mark",
+    "rive",
+  ]),
+  role: z.enum(["background", "subject", "foreground", "effect"]).default("subject"),
+  asset: assetSchema.optional(),
+  riveSrc: z.string().min(1).optional(),
+  label: z.string().max(40).optional(),
+  style: motion2dStyleSchema.default({
+    mixBlendMode: "normal",
+  }),
+  visibility: visibilitySchema.optional(),
+  reveal: revealSchema.optional(),
+  pointerInfluence: z.number().min(0).max(1).default(0.08),
+  keyframes: z.array(keyframeSchema).min(2),
+  mobile: z.object({
+    hidden: z.boolean().optional(),
+    scaleMultiplier: z.number().positive().optional(),
+    assetSrc: z.string().min(1).optional(),
+    pointerInfluence: z.number().min(0).max(1).optional(),
+  }).optional(),
+}).superRefine((element, ctx) => {
+  if (element.kind === "image" && !element.asset) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Motion 2D image elements require an asset.",
+      path: ["asset"],
+    });
+  }
+
+  if (element.kind === "rive" && !element.riveSrc) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Motion 2D Rive elements require riveSrc.",
+      path: ["riveSrc"],
+    });
+  }
+});
+
 const vec3Schema = z.tuple([z.number(), z.number(), z.number()]);
 
 const threeTransformKeyframeSchema = z.object({
@@ -203,6 +269,17 @@ export const heroSpecSchema = z.object({
   }),
   scenes: z.array(sceneSchema).min(1),
   textTimeline: z.array(textCueSchema).default([]),
+  motion2d: z.object({
+    preset: z.enum([
+      "graphic-clean",
+      "editorial",
+      "kinetic-type",
+      "product-ui",
+      "brand-motion",
+    ]).default("graphic-clean"),
+    pointerStrength: z.number().min(0).max(1).default(0.2),
+    elements: z.array(motion2dElementSchema).min(1),
+  }).optional(),
   cinematic25d: z.object({
     preset: z.enum([
       "neutral",
@@ -255,3 +332,6 @@ export type HeroTextCue = HeroSpec["textTimeline"][number];
 export type CinematicLayer = NonNullable<HeroSpec["cinematic25d"]>["layers"][number];
 export type Immersive3DSpec = NonNullable<HeroSpec["immersive3d"]>;
 export type Immersive3DObject = Immersive3DSpec["objects"][number];
+
+export type Motion2DSpec = NonNullable<HeroSpec["motion2d"]>;
+export type Motion2DElement = Motion2DSpec["elements"][number];

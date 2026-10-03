@@ -38,6 +38,8 @@ Additional checkpoints may be added around the hero moment or scene transitions.
 - generic/template-like appearance
 - brand specificity
 - conversion clarity
+- target-language consistency
+- renderer initialization flash
 
 ## Hero moment check
 
@@ -48,6 +50,26 @@ The hero moment must:
 - express the concept rather than only an effect;
 - remain understandable on mobile;
 - have a viable low-performance interpretation.
+
+## Final conversion-state checks
+
+At progress 1.00 the hero MUST:
+
+- retain a visible headline or supporting message;
+- retain a visible CTA;
+- keep the CTA clickable;
+- use the configured contentLanguage;
+- avoid fading the CTA out at the end;
+- reduce visual competition around the CTA;
+- preserve brand and conversion clarity.
+
+A hero fails QA if the final actionable state disappears before or at 100%.
+
+## Renderer-ready check
+
+On first load, verify that no typography, image layer or primitive appears in an uninitialized state and then disappears/reappears.
+
+Visual worlds should remain hidden until the renderer has applied its initial progress state.
 
 ## Mobile-specific checks
 
@@ -137,6 +159,8 @@ CTA                     PASS
 Responsive composition  PASS
 Performance fallback    PASS
 Reduced motion          PASS
+Content language        PASS
+Final conversion state  PASS
 ```
 
 For every issue include:

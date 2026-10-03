@@ -326,3 +326,31 @@ button, a { font: inherit; }
 @media (prefers-reduced-motion: reduce) {
   .scroll-indicator { display: none; }
 }
+
+
+.immersive-3d-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+  touch-action: pan-y;
+}
+
+.hero-stage[data-active-renderer="immersive-3d"] {
+  background:
+    radial-gradient(circle at 50% 40%, rgba(42, 119, 255, .09), transparent 32%),
+    #02050d;
+}
+
+.hero-stage[data-active-renderer="immersive-3d"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 50%, transparent 45%, rgba(1, 4, 12, .28) 100%),
+    linear-gradient(180deg, rgba(2, 5, 13, .08), transparent 55%, rgba(2, 5, 13, .2));
+}

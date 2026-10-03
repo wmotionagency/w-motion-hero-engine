@@ -21,6 +21,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Validate Client Analysis
+        run: npm run validate:client-analysis
+
       - name: Validate Art Director
         run: npm run validate:art-director
 

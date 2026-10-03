@@ -18,6 +18,27 @@ button, a { font: inherit; }
     linear-gradient(180deg, #071226 0%, #030816 55%, #050816 100%);
 }
 
+.hero-scroll-zone[data-preset="luxury-dark"],
+.hero-scroll-zone[data-preset="product-reveal"] {
+  background:
+    radial-gradient(circle at 52% 36%, rgba(40, 111, 220, .2), transparent 31%),
+    linear-gradient(180deg, #06101f 0%, #02050c 66%, #03050a 100%);
+}
+
+.hero-scroll-zone[data-preset="editorial-light"] {
+  color-scheme: light;
+  background:
+    radial-gradient(circle at 50% 35%, rgba(90, 158, 255, .16), transparent 34%),
+    linear-gradient(180deg, #f6f8fc, #e9eef7);
+  color: #07111f;
+}
+
+.hero-scroll-zone[data-preset="spatial-ui"] {
+  background:
+    radial-gradient(circle at 50% 38%, rgba(76, 122, 255, .26), transparent 34%),
+    linear-gradient(180deg, #080817, #02020a);
+}
+
 .hero-sticky {
   position: sticky;
   top: 0;
@@ -51,6 +72,35 @@ button, a { font: inherit; }
 .cinematic-shape {
   display: block;
   position: relative;
+}
+
+.cinematic-asset {
+  position: relative;
+  display: block;
+  overflow: visible;
+}
+
+.cinematic-asset--background {
+  width: 112vw;
+  height: 112svh;
+}
+
+.cinematic-asset--subject {
+  width: min(82vw, 1180px);
+  height: min(74svh, 760px);
+}
+
+.cinematic-asset--foreground {
+  width: 118vw;
+  height: 118svh;
+}
+
+.cinematic-layer--role-background {
+  transform-origin: center center;
+}
+
+.cinematic-layer--role-subject {
+  filter: drop-shadow(0 36px 48px rgba(0, 0, 0, .28));
 }
 
 .cinematic-shape--glow {
@@ -225,6 +275,21 @@ button, a { font: inherit; }
 
 @media (max-width: 767px) {
   .hero-scroll-zone { --hero-scroll-length: 300vh !important; }
+
+  .cinematic-asset--background {
+    width: 135vw;
+    height: 112svh;
+  }
+
+  .cinematic-asset--subject {
+    width: 112vw;
+    height: 60svh;
+  }
+
+  .cinematic-asset--foreground {
+    width: 145vw;
+    height: 110svh;
+  }
 
   .cinematic-shape--glow { width: 115vw; }
   .cinematic-shape--grid {

@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint .",
     "validate:art-director": "tsx scripts/validate-art-director.ts",
-    "validate:workflow": "tsx scripts/validate-workflow.ts"
+    "validate:workflow": "tsx scripts/validate-workflow.ts",
+    "validate:client-analysis": "tsx scripts/validate-client-analysis.ts"
   },
   "dependencies": {
     "@rive-app/react-canvas": "latest",

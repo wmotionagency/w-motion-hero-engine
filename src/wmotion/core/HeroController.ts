@@ -27,6 +27,7 @@ export class HeroController {
 
     await renderer.preload();
     renderer.mount(container);
+    renderer.setResponsive?.(perf.responsive);
     this.interaction.mount(container);
 
     this.unsubscribers.push(
@@ -52,7 +53,10 @@ export class HeroController {
   }
 
   resize() {
+    const perf = this.performance.detect();
+    this.renderer?.setResponsive?.(perf.responsive);
     this.renderer?.resize();
+    this.emit(perf);
   }
 
   destroy() {

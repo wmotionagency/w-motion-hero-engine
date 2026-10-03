@@ -9,7 +9,8 @@ Step 2 — configurable Cinematic 2.5D renderer ✅
 Step 3 — real asset pipeline for Cinematic 2.5D ✅  
 Step 4 — provider-agnostic Art Director brain ✅  
 Step 5 — scrub-driven Immersive 3D renderer ✅  
-Step 6 — production Motion 2D renderer ✅
+Step 6 — production Motion 2D renderer ✅  
+Step 7 — W Motion Work Workflow ✅
 
 ## Core capabilities
 
@@ -441,3 +442,132 @@ Hero Spec
         ↓
 W Motion Hero Engine
 ```
+
+
+## W Motion Work Workflow
+
+The repository now contains a Work-ready operating layer under:
+
+```
+workflows/
+```
+
+Main procedure:
+
+```
+workflows/create-hero.md
+```
+
+Operational rules:
+
+```
+workflows/work-constitution.md
+```
+
+Visual QA:
+
+```
+workflows/visual-qa.md
+```
+
+Reference templates:
+
+```
+workflows/templates/
+```
+
+The intended usage in ChatGPT Work is now:
+
+```
+Crea una hero W Motion per:
+https://cliente.it
+```
+
+Work should then execute:
+
+```
+Client URL / brief
+        ↓
+Client Analysis
+        ↓
+Creative Brief
+        ↓
+Art Director
+        ↓
+Art Direction Plan
+        ↓
+Validator
+        ↓
+Compiler
+        ↓
+Hero Spec
+        ↓
+Asset plan
+        ↓
+Hero Engine
+        ↓
+Visual QA
+        ↓
+Targeted corrections
+        ↓
+Final Hero
+```
+
+The workflow is intentionally provider-agnostic. GPT-6 Astra or GPT-5.6 Sol can execute it in Work without embedding a model API into the engine.
+
+### Workflow data contracts
+
+Additional Work-facing schemas live in:
+
+```
+src/wmotion/workflow/
+```
+
+They currently define:
+
+- Client Analysis;
+- Client Analysis → Creative Brief mapping;
+- Visual QA report.
+
+TypeScript/Zod schemas remain the source of truth. JSON templates are examples only.
+
+### Workflow validation
+
+Run:
+
+```bash
+npm run validate:art-director
+npm run validate:workflow
+npm run build
+```
+
+`validate:workflow` verifies:
+
+- all Work JSON templates;
+- Client Analysis → Creative Brief;
+- Art Direction validation;
+- Hero Spec compilation;
+- Motion 2D execution path;
+- Cinematic 2.5D execution path;
+- Immersive 3D execution path;
+- Motion 2D fallback;
+- 2.5D fallback for immersive 3D;
+- mobile strategy presence.
+
+## Next step
+
+The next major step is making the upstream analysis operational inside Work:
+
+```
+Client URL
+↓
+automatic first-party business analysis
+↓
+Client Analysis
+↓
+Creative Brief
+↓
+existing Work Workflow
+```
+
+After that, the practical command can be reduced to a single client URL.

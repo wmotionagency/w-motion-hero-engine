@@ -1,0 +1,96 @@
+{
+  "id": "example-client-hero",
+  "renderer": "motion-2d",
+  "scrollLength": 320,
+  "brand": {
+    "name": "Example Brand",
+    "primary": "#4A9DFF",
+    "background": "#050816"
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "start": 0,
+      "end": 0.5,
+      "transitionOut": "resolve"
+    },
+    {
+      "id": "conversion",
+      "start": 0.5,
+      "end": 1,
+      "transitionIn": "resolve"
+    }
+  ],
+  "textTimeline": [
+    {
+      "id": "headline",
+      "from": 0.1,
+      "to": 0.42,
+      "headline": "Una sola idea forte."
+    },
+    {
+      "id": "cta",
+      "from": 0.72,
+      "to": 0.99,
+      "ctaLabel": "Parliamo del progetto"
+    }
+  ],
+  "motion2d": {
+    "preset": "brand-motion",
+    "pointerStrength": 0.18,
+    "elements": [
+      {
+        "id": "subject",
+        "kind": "circle",
+        "role": "subject",
+        "style": {
+          "background": "#4A9DFF",
+          "mixBlendMode": "normal"
+        },
+        "pointerInfluence": 0.08,
+        "keyframes": [
+          {
+            "at": 0,
+            "x": 80,
+            "y": 30,
+            "scale": 0.7,
+            "opacity": 0
+          },
+          {
+            "at": 0.55,
+            "x": 0,
+            "y": 0,
+            "scale": 1,
+            "opacity": 1
+          },
+          {
+            "at": 1,
+            "x": -30,
+            "y": -8,
+            "scale": 1.15,
+            "opacity": 0.4
+          }
+        ]
+      }
+    ]
+  },
+  "performance": {
+    "highRenderer": "motion-2d",
+    "mediumRenderer": "motion-2d",
+    "lowRenderer": "motion-2d"
+  },
+  "responsive": {
+    "desktop": {
+      "scrollLength": 320,
+      "composition": "graphic-wide"
+    },
+    "tablet": {
+      "scrollLength": 290,
+      "composition": "graphic-centered"
+    },
+    "mobile": {
+      "scrollLength": 250,
+      "composition": "graphic-mobile"
+    }
+  }
+}

@@ -3,9 +3,23 @@
 import { HeroCTA } from "./HeroCTA";
 import type { HeroTextCue } from "@/wmotion/schemas/hero.schema";
 
-function cueVisibility(progress: number, from: number, to: number) {
-  if (progress < from || progress > to) return 0;
-  const span = to - from;
+function cueVisibility(
+  progress: number,
+  from: number,
+  to: number,
+  persist = false,
+) {
+  if (progress < from) return 0;
+
+  const span = Math.max(0.0001, to - from);
+
+  if (persist) {
+    const fadeDuration = Math.min(0.08, Math.max(0.025, span * 0.24));
+    return Math.min(1, (progress - from) / fadeDuration);
+  }
+
+  if (progress > to) return 0;
+
   const local = (progress - from) / span;
   const fade = Math.min(0.22, span / 2);
   const inEnd = fade / span;
@@ -28,7 +42,11 @@ export function HeroTextLayer({
   return (
     <div className="hero-copy-layer" aria-live="polite">
       {cues.map((cue) => {
-        const opacity = reducedMotion ? (progress >= cue.from ? 1 : 0) : cueVisibility(progress, cue.from, cue.to);
+        const opacity = reducedMotion
+          ? progress >= cue.from
+            ? 1
+            : 0
+          : cueVisibility(progress, cue.from, cue.to, cue.persist);
         const y = reducedMotion ? 0 : (1 - opacity) * 28;
 
         return (

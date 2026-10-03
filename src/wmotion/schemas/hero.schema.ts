@@ -18,7 +18,9 @@ const textCueSchema = z.object({
   headline: z.string().optional(),
   body: z.string().optional(),
   ctaLabel: z.string().optional(),
-  ctaHref: z.string().optional(),
+  ctaHref: z.string().min(1).optional(),
+  persist: z.boolean().default(false),
+  final: z.boolean().default(false),
 }).refine((cue) => cue.to > cue.from, {
   message: "Text cue 'to' must be greater than 'from'.",
 });
@@ -275,6 +277,15 @@ export const heroSpecSchema = z.object({
     primary: z.string().optional(),
     background: z.string().optional(),
   }),
+  contentLanguage: z.string().min(2).default("en"),
+  market: z.string().min(2).optional(),
+  conversion: z.object({
+    goal: z.string().min(2),
+    zoneStart: z.number().min(0.7).max(0.82).default(0.76),
+    zoneEnd: z.literal(1).default(1),
+    requiresPersistentCta: z.boolean().default(true),
+    quietFinalState: z.boolean().default(true),
+  }).optional(),
   scenes: z.array(sceneSchema).min(1),
   textTimeline: z.array(textCueSchema).default([]),
   motion2d: z.object({

@@ -9,11 +9,14 @@ export const rendererChoiceSchema = z.enum([
 export const creativeBriefSchema = z.object({
   projectId: z.string().min(1),
   brandName: z.string().min(1),
+  contentLanguage: z.string().min(2).default("en"),
+  market: z.string().min(2).optional(),
   businessType: z.string().min(2),
   offer: z.string().min(2),
   audience: z.string().min(2),
   conversionGoal: z.string().min(2),
   primaryCta: z.string().min(1),
+  primaryCtaHref: z.string().min(1).optional(),
   brandTraits: z.array(z.string().min(1)).min(2).max(6),
   visualInputs: z.array(z.string().min(1)).default([]),
   constraints: z.array(z.string().min(1)).default([]),
@@ -65,6 +68,8 @@ export const copyPlanSchema = z.object({
 export const artDirectionPlanSchema = z.object({
   version: z.literal("1.0"),
   projectId: z.string().min(1),
+  contentLanguage: z.string().min(2).default("en"),
+  market: z.string().min(2).optional(),
   brand: z.object({
     name: z.string().min(1),
     analysis: brandAnalysisSchema,
@@ -72,6 +77,7 @@ export const artDirectionPlanSchema = z.object({
   objective: z.object({
     conversionGoal: z.string().min(2),
     primaryCta: z.string().min(1),
+    primaryCtaHref: z.string().min(1).optional(),
   }),
   concept: z.object({
     name: z.string().min(2).max(60),
@@ -114,6 +120,15 @@ export const artDirectionPlanSchema = z.object({
     medium: z.string().min(6),
     low: z.string().min(6),
     maxCriticalAssets: z.number().min(1).max(6),
+  }),
+  conversionStrategy: z.object({
+    zoneStart: z.number().min(0.7).max(0.82).default(0.76),
+    persistentFinalCta: z.boolean().default(true),
+    quietFinalState: z.boolean().default(true),
+  }).default({
+    zoneStart: 0.76,
+    persistentFinalCta: true,
+    quietFinalState: true,
   }),
 });
 

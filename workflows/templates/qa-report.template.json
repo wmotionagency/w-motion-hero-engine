@@ -1,0 +1,80 @@
+{
+  "projectId": "example-client-hero",
+  "checkpoints": [
+    {
+      "viewport": "desktop",
+      "checkpoint": 0,
+      "status": "pass",
+      "notes": []
+    },
+    {
+      "viewport": "desktop",
+      "checkpoint": 0.25,
+      "status": "pass",
+      "notes": []
+    },
+    {
+      "viewport": "desktop",
+      "checkpoint": 0.5,
+      "status": "pass",
+      "notes": []
+    },
+    {
+      "viewport": "desktop",
+      "checkpoint": 0.75,
+      "status": "pass",
+      "notes": []
+    },
+    {
+      "viewport": "desktop",
+      "checkpoint": 1,
+      "status": "pass",
+      "notes": []
+    },
+    {
+      "viewport": "mobile",
+      "checkpoint": 0,
+      "status": "pass",
+      "notes": []
+    },
+    {
+      "viewport": "mobile",
+      "checkpoint": 0.25,
+      "status": "pass",
+      "notes": []
+    },
+    {
+      "viewport": "mobile",
+      "checkpoint": 0.5,
+      "status": "pass",
+      "notes": []
+    },
+    {
+      "viewport": "mobile",
+      "checkpoint": 0.75,
+      "status": "pass",
+      "notes": []
+    },
+    {
+      "viewport": "mobile",
+      "checkpoint": 1,
+      "status": "pass",
+      "notes": []
+    },
+    {
+      "viewport": "reduced-motion",
+      "checkpoint": 1,
+      "status": "pass",
+      "notes": [
+        "CTA and final message remain accessible."
+      ]
+    }
+  ],
+  "heroMoment": "pass",
+  "cta": "pass",
+  "responsiveComposition": "pass",
+  "performanceFallback": "pass",
+  "reducedMotion": "pass",
+  "issues": [],
+  "finalStatus": "pass"
+}

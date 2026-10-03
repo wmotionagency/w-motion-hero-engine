@@ -41,5 +41,8 @@
   ],
   "evidenceNotes": [
     "Example template only. Replace with evidence gathered from the client source."
-  ]
+  ],
+  "contentLanguage": "it",
+  "market": "IT",
+  "primaryCtaHref": "#contact"
 }

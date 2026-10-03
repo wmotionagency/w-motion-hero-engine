@@ -169,11 +169,11 @@ export function validateArtDirectionPlan(
 
   if (plan.renderer.recommended === "immersive-3d" && plan.renderer.fallback === "immersive-3d") {
     issues.push({
-      severity: "warning",
+      severity: "error",
       code: "3d-fallback",
-      message: "Immersive 3D should normally provide a lighter fallback renderer.",
+      message: "Immersive 3D requires a lighter fallback renderer.",
     });
-    score -= 8;
+    score -= 20;
   }
 
   if (!plan.assets.some((asset) => asset.role === "subject")) {

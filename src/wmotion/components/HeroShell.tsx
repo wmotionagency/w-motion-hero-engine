@@ -222,7 +222,13 @@ function Motion2DVisual({
   );
 }
 
-export function HeroShell({ spec }: { spec: HeroSpec }) {
+export function HeroShell({
+  spec,
+  debug = true,
+}: {
+  spec: HeroSpec;
+  debug?: boolean;
+}) {
   const zoneRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const controller = useMemo(
@@ -381,7 +387,7 @@ export function HeroShell({ spec }: { spec: HeroSpec }) {
 
           <ScrollIndicator />
 
-          <aside className="hero-debug" aria-label="Hero engine debug">
+          {debug ? <aside className="hero-debug" aria-label="Hero engine debug">
             <span>Progress: {runtime.progress.toFixed(3)}</span>
             <span>Scene: {runtime.sceneState.scene.id}</span>
             <span>
@@ -395,7 +401,7 @@ export function HeroShell({ spec }: { spec: HeroSpec }) {
               Pointer: {runtime.pointer.x.toFixed(2)},{" "}
               {runtime.pointer.y.toFixed(2)}
             </span>
-          </aside>
+          </aside> : null}
         </div>
       </section>
     </main>

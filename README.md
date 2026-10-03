@@ -10,7 +10,8 @@ Step 3 — real asset pipeline for Cinematic 2.5D ✅
 Step 4 — provider-agnostic Art Director brain ✅  
 Step 5 — scrub-driven Immersive 3D renderer ✅  
 Step 6 — production Motion 2D renderer ✅  
-Step 7 — W Motion Work Workflow ✅
+Step 7 — W Motion Work Workflow ✅  
+Step 8 — evidence-driven Client URL Analysis ✅
 
 ## Core capabilities
 
@@ -571,3 +572,154 @@ existing Work Workflow
 ```
 
 After that, the practical command can be reduced to a single client URL.
+
+
+## Client URL Analysis
+
+The upstream Work pipeline now starts from a client URL and builds an evidence-backed business analysis before creative direction begins.
+
+Main browsing procedure:
+
+```
+workflows/analyze-client-url.md
+```
+
+Architecture:
+
+```
+Client URL
+    ↓
+canonical business resolution
+    ↓
+first-party browsing
+    ↓
+ClientResearchBundle
+    ↓
+research quality gate
+    ↓
+Client Analysis
+    ↓
+analysis quality gate
+    ↓
+Creative Brief
+    ↓
+existing Art Director workflow
+```
+
+### Evidence layer
+
+Research data is defined in:
+
+```
+src/wmotion/workflow/schemas.ts
+```
+
+The research bundle records:
+
+- inspected pages;
+- source type;
+- page purpose;
+- evidence facts;
+- explicit vs inferred status;
+- confidence;
+- rationale;
+- unresolved questions.
+
+Work is instructed to prefer:
+
+1. user-supplied material;
+2. official website;
+3. official business profile;
+4. official social profiles;
+5. secondary sources only when needed.
+
+Important business claims should remain first-party whenever possible.
+
+### Research quality gate
+
+`validateClientResearchBundle()` checks for:
+
+- official-site coverage;
+- sufficient page depth;
+- evidence for critical fields;
+- high-confidence evidence density;
+- excessive inference.
+
+### Client Analysis quality gate
+
+`validateClientAnalysisAgainstResearch()` checks that the final analysis does not drift from explicit evidence.
+
+For example, it rejects a Client Analysis whose brand name conflicts with a directly observed brand name.
+
+### Browser/model independence
+
+The repository still contains no custom scraper and no LLM API.
+
+ChatGPT Work performs the browsing. The repository defines:
+
+- what to inspect;
+- how to store evidence;
+- what may be inferred;
+- how to validate the result.
+
+This keeps the workflow compatible with future browser or model providers.
+
+### Validation
+
+Run:
+
+```bash
+npm run validate:client-analysis
+npm run validate:art-director
+npm run validate:workflow
+npm run build
+```
+
+The client-analysis validation confirms:
+
+- research template validity;
+- official evidence fixture;
+- research scoring;
+- Client Analysis consistency;
+- Client Analysis → Creative Brief;
+- missing critical evidence rejection;
+- explicit-fact conflict rejection.
+
+## Practical Work command
+
+The intended starting command is now:
+
+```
+Crea una hero W Motion per:
+https://cliente.it
+```
+
+Work has instructions for the complete chain from URL research to final QA.
+
+## Next step
+
+The next useful step is no longer architectural.
+
+Run the **first real end-to-end client test**:
+
+```
+real client URL
+↓
+Client Research
+↓
+Client Analysis
+↓
+Creative Brief
+↓
+Art Director
+↓
+Hero Spec
+↓
+actual assets
+↓
+rendered preview
+↓
+Visual QA
+```
+
+That test should reveal which parts of the system need refinement based on real creative output rather than additional abstract infrastructure.

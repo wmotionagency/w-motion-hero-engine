@@ -1,4 +1,5 @@
 import { gsap } from "gsap";
+import { AssetLoader } from "@/wmotion/core/AssetLoader";
 import type { HeroRenderer, PointerState, ResponsiveVariant, SceneState } from "@/wmotion/core/types";
 import type { CinematicLayer } from "@/wmotion/schemas/hero.schema";
 
@@ -6,10 +7,6 @@ type LayerEl = {
   spec: CinematicLayer;
   el: HTMLElement;
 };
-
-function lerp(a = 0, b = 0, t: number) {
-  return a + (b - a) * t;
-}
 
 type SampledTransform = {
   x: number;
@@ -19,6 +16,14 @@ type SampledTransform = {
   opacity: number;
   blur: number;
 };
+
+function clamp01(value: number) {
+  return Math.min(1, Math.max(0, value));
+}
+
+function lerp(a = 0, b = 0, t: number) {
+  return a + (b - a) * t;
+}
 
 function normalizeFrame(
   frame: Partial<SampledTransform>,
@@ -62,6 +67,59 @@ function sampleLayer(layer: CinematicLayer, progress: number): SampledTransform 
   };
 }
 
+function visibilityFactor(layer: CinematicLayer, progress: number, activeSceneId?: string) {
+  const visibility = layer.visibility;
+  if (!visibility) return 1;
+
+  if (visibility.scenes?.length && activeSceneId && !visibility.scenes.includes(activeSceneId)) {
+    return 0;
+  }
+
+  const from = visibility.from ?? 0;
+  const to = visibility.to ?? 1;
+  if (progress < from || progress > to) return 0;
+
+  const span = Math.max(0.0001, to - from);
+  const edge = Math.min(0.04, span * 0.18);
+  if (edge <= 0.0001) return 1;
+
+  if (progress < from + edge) {
+    return clamp01((progress - from) / edge);
+  }
+
+  if (progress > to - edge) {
+    return clamp01((to - progress) / edge);
+  }
+
+  return 1;
+}
+
+function revealProgress(layer: CinematicLayer, progress: number) {
+  const reveal = layer.reveal;
+  if (!reveal || reveal.type === "none") return 1;
+
+  const span = Math.max(0.0001, reveal.to - reveal.from);
+  const raw = clamp01((progress - reveal.from) / span);
+  return reveal.invert ? 1 - raw : raw;
+}
+
+function revealClipPath(layer: CinematicLayer, progress: number) {
+  const reveal = layer.reveal;
+  if (!reveal || reveal.type === "none" || reveal.type === "fade") return "none";
+
+  const p = revealProgress(layer, progress);
+
+  if (reveal.type === "wipe-x") {
+    return `inset(0 ${(1 - p) * 100}% 0 0)`;
+  }
+
+  if (reveal.type === "wipe-y") {
+    return `inset(0 0 ${(1 - p) * 100}% 0)`;
+  }
+
+  return `circle(${p * 78}% at 50% 50%)`;
+}
+
 export class Cinematic25DRenderer implements HeroRenderer {
   private root?: HTMLElement;
   private layers: LayerEl[] = [];
@@ -69,13 +127,21 @@ export class Cinematic25DRenderer implements HeroRenderer {
   private pointer: PointerState = { x: 0, y: 0 };
   private responsive: ResponsiveVariant = "desktop";
   private sceneState?: SceneState;
+  private readonly assetLoader = new AssetLoader();
 
   constructor(
     private readonly layerSpecs: CinematicLayer[] = [],
     private readonly pointerStrength = 0.45,
   ) {}
 
-  async preload() {}
+  async preload() {
+    const urls = this.layerSpecs.flatMap((layer) => {
+      if (!layer.asset) return [];
+      return [layer.asset.src, layer.mobile?.assetSrc].filter((value): value is string => Boolean(value));
+    });
+
+    await this.assetLoader.preloadImages([...new Set(urls)]);
+  }
 
   mount(container: HTMLElement) {
     this.root = container;
@@ -105,6 +171,7 @@ export class Cinematic25DRenderer implements HeroRenderer {
       this.root.dataset.scene = sceneState.scene.id;
       this.root.style.setProperty("--wm-scene-progress", sceneState.localProgress.toFixed(4));
     }
+    this.render();
   }
 
   setResponsive(variant: ResponsiveVariant) {
@@ -141,6 +208,9 @@ export class Cinematic25DRenderer implements HeroRenderer {
       const pointerX = this.pointer.x * parallax * this.pointerStrength * depthFactor;
       const pointerY = this.pointer.y * parallax * this.pointerStrength * depthFactor;
       const scaleMultiplier = mobile?.scaleMultiplier ?? 1;
+      const visible = visibilityFactor(spec, this.progress, this.sceneState?.scene.id);
+      const reveal = revealProgress(spec, this.progress);
+      const revealOpacity = spec.reveal?.type === "fade" ? reveal : 1;
 
       gsap.set(el, {
         display: "block",
@@ -148,8 +218,10 @@ export class Cinematic25DRenderer implements HeroRenderer {
         y: sampled.y + pointerY,
         scale: sampled.scale * scaleMultiplier,
         rotate: sampled.rotate,
-        opacity: sampled.opacity,
+        opacity: sampled.opacity * visible * revealOpacity,
         filter: sampled.blur ? `blur(${sampled.blur}px)` : "none",
+        clipPath: revealClipPath(spec, this.progress),
+        mixBlendMode: spec.blendMode,
         force3D: true,
         transformOrigin: "50% 50%",
       });

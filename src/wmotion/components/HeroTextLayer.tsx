@@ -39,13 +39,19 @@ export function HeroTextLayer({
   progress: number;
   reducedMotion: boolean;
 }) {
+  const hasFinalCue = cues.some((cue) => cue.final);
+
   return (
     <div className="hero-copy-layer" aria-live="polite">
       {cues.map((cue) => {
         const opacity = reducedMotion
-          ? progress >= cue.from
-            ? 1
-            : 0
+          ? hasFinalCue
+            ? cue.final
+              ? 1
+              : 0
+            : progress >= cue.from
+              ? 1
+              : 0
           : cueVisibility(progress, cue.from, cue.to, cue.persist);
         const y = reducedMotion ? 0 : (1 - opacity) * 28;
 

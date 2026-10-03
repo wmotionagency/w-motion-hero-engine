@@ -551,3 +551,17 @@ button, a { font: inherit; }
     font-size: clamp(2.5rem, 18vw, 6rem);
   }
 }
+
+
+.hero-stage[data-renderer-ready="false"] {
+  visibility: hidden;
+}
+
+[data-copy-ready="false"] {
+  visibility: hidden;
+}
+
+.hero-stage[data-renderer-ready="true"],
+[data-copy-ready="true"] {
+  visibility: visible;
+}

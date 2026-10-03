@@ -9,6 +9,8 @@ export function buildCreativeBriefFromAnalysis(
   return creativeBriefSchema.parse({
     projectId: analysis.projectId,
     brandName: analysis.brandName,
+    contentLanguage: analysis.contentLanguage,
+    market: analysis.market,
     businessType: analysis.businessType,
     offer: analysis.offer,
     audience: analysis.audience,

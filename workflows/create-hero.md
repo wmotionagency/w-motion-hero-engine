@@ -55,6 +55,13 @@ Use:
 
 Only evidence-backed or explicitly labelled inferred facts may enter the Client Analysis.
 
+Client Analysis must also resolve:
+- contentLanguage;
+- market;
+- primaryCtaHref when the destination is discoverable.
+
+The content language must reflect the customer-facing target market or an explicit user/client instruction. Do not blindly copy the source site's language if it conflicts with the intended market.
+
 Never invent unavailable facts.
 
 ---
@@ -169,6 +176,7 @@ Produce an object compatible with:
 
 It must include:
 
+- contentLanguage and market;
 - brand analysis;
 - conversion objective;
 - concept;
@@ -185,7 +193,10 @@ It must include:
 - assets;
 - minimal copy;
 - mobile strategy;
-- performance strategy.
+- performance strategy;
+- conversion strategy with a zone starting roughly at 0.75–0.80;
+- a persistent final CTA;
+- a quiet final conversion state.
 
 ---
 
@@ -222,6 +233,13 @@ Run:
 Do not manually recreate Hero Spec when the compiler already supports the intended concept.
 
 Output a valid Hero Spec.
+
+The compiled Hero Spec must contain a conversion zone and a final text cue that:
+- reaches progress 1.0;
+- has `persist: true`;
+- has `final: true`;
+- contains a clickable CTA destination;
+- still contains readable conversion copy at progress 1.0.
 
 ---
 
@@ -319,6 +337,14 @@ Required viewports:
 - tablet where relevant.
 
 Inspect the hero moment and every scene transition.
+
+At 100% scroll, explicitly verify:
+- final headline/body still visible;
+- CTA still visible;
+- CTA still clickable;
+- copy language matches contentLanguage;
+- final composition is quieter than the hero moment;
+- no visual element flashes because the renderer was not initialized.
 
 ---
 

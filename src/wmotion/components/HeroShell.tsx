@@ -84,6 +84,7 @@ function LayerVisual({
         fill
         sizes="100vw"
         priority={layer.asset.preload}
+        unoptimized={src.endsWith(".svg")}
         style={{
           objectFit: layer.asset.fit,
           objectPosition: position,

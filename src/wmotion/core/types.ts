@@ -36,6 +36,7 @@ export interface HeroRenderer {
   setPointer?(pointer: PointerState): void;
   setSceneState?(sceneState: SceneState): void;
   setResponsive?(variant: ResponsiveVariant): void;
+  setPerformance?(profile: PerformanceProfile): void;
   resize(): void;
   destroy(): void;
 }

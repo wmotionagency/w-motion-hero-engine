@@ -310,7 +310,12 @@ export function HeroShell({ spec }: { spec: HeroSpec }) {
         data-preset={preset}
         data-active-renderer={activeRenderer}
         style={
-          { "--hero-scroll-length": `${scrollLength}vh` } as React.CSSProperties
+          {
+            "--hero-scroll-length": `${scrollLength}vh`,
+            ...(activeRenderer === "motion-2d" && spec.motion2d?.background
+              ? { background: spec.motion2d.background }
+              : {}),
+          } as React.CSSProperties
         }
       >
         <div className="hero-sticky">

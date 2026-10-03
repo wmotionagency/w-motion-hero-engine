@@ -30,9 +30,13 @@
     },
     {
       "id": "cta",
-      "from": 0.72,
-      "to": 0.99,
-      "ctaLabel": "Parliamo del progetto"
+      "from": 0.76,
+      "to": 1,
+      "ctaLabel": "Parliamo del progetto",
+      "headline": "Pronto a parlarne?",
+      "ctaHref": "#contact",
+      "persist": true,
+      "final": true
     }
   ],
   "motion2d": {
@@ -92,5 +96,14 @@
       "scrollLength": 250,
       "composition": "graphic-mobile"
     }
+  },
+  "contentLanguage": "it",
+  "market": "IT",
+  "conversion": {
+    "goal": "Generare richieste qualificate",
+    "zoneStart": 0.76,
+    "zoneEnd": 1,
+    "requiresPersistentCta": true,
+    "quietFinalState": true
   }
 }

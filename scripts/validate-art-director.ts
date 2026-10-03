@@ -4,6 +4,10 @@ import {
   automotiveDetailingBrief,
   automotiveDetailingPlan,
 } from "../src/wmotion/art-director/fixtures/automotive-detailing";
+import {
+  immersiveProductBrief,
+  immersiveProductPlan,
+} from "../src/wmotion/art-director/fixtures/immersive-product";
 
 const demo = runArtDirectorDemo();
 
@@ -34,11 +38,36 @@ if (!accepted.accepted) {
 }
 
 if (accepted.heroSpec.renderer !== "cinematic-25d") {
-  throw new Error("Compiled Hero Spec selected the wrong renderer.");
+  throw new Error("Compiled Hero Spec selected the wrong 2.5D renderer.");
 }
 
 if (!accepted.heroSpec.cinematic25d?.layers.length) {
   throw new Error("Compiled Cinematic 2.5D plan has no layers.");
+}
+
+const immersiveAccepted = acceptArtDirectorOutput(
+  immersiveProductBrief,
+  immersiveProductPlan,
+);
+
+if (!immersiveAccepted.accepted) {
+  throw new Error("Valid Immersive 3D Art Direction Plan was unexpectedly rejected.");
+}
+
+if (immersiveAccepted.heroSpec.renderer !== "immersive-3d") {
+  throw new Error("Compiled Hero Spec selected the wrong 3D renderer.");
+}
+
+if (!immersiveAccepted.heroSpec.immersive3d?.objects.length) {
+  throw new Error("Compiled Immersive 3D plan has no 3D objects.");
+}
+
+if (!immersiveAccepted.heroSpec.immersive3d?.camera.keyframes.length) {
+  throw new Error("Compiled Immersive 3D plan has no camera timeline.");
+}
+
+if (!immersiveAccepted.heroSpec.cinematic25d?.layers.length) {
+  throw new Error("Immersive 3D plan is missing its Cinematic 2.5D fallback.");
 }
 
 const invalidPlan = structuredClone(automotiveDetailingPlan);
@@ -53,16 +82,39 @@ if (rejected.accepted) {
   throw new Error("Invalid Art Direction Plan should have been rejected.");
 }
 
+const invalid3DPlan = structuredClone(immersiveProductPlan);
+invalid3DPlan.renderer.fallback = "immersive-3d";
+
+const rejected3D = acceptArtDirectorOutput(
+  immersiveProductBrief,
+  invalid3DPlan,
+);
+
+if (rejected3D.accepted) {
+  throw new Error("Immersive 3D plan without a lighter fallback should be rejected.");
+}
+
 console.log(
   JSON.stringify(
     {
       status: "ok",
-      score: demo.validation.score,
-      concept: demo.plan.concept.name,
-      renderer: accepted.heroSpec.renderer,
-      scenes: accepted.heroSpec.scenes.length,
-      layers: accepted.heroSpec.cinematic25d?.layers.length ?? 0,
+      cinematic25d: {
+        score: demo.validation.score,
+        concept: demo.plan.concept.name,
+        renderer: accepted.heroSpec.renderer,
+        scenes: accepted.heroSpec.scenes.length,
+        layers: accepted.heroSpec.cinematic25d?.layers.length ?? 0,
+      },
+      immersive3d: {
+        renderer: immersiveAccepted.heroSpec.renderer,
+        objects: immersiveAccepted.heroSpec.immersive3d?.objects.length ?? 0,
+        cameraKeyframes:
+          immersiveAccepted.heroSpec.immersive3d?.camera.keyframes.length ?? 0,
+        fallbackLayers:
+          immersiveAccepted.heroSpec.cinematic25d?.layers.length ?? 0,
+      },
       invalidPlanRejected: true,
+      invalid3DFallbackRejected: true,
     },
     null,
     2,

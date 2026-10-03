@@ -16,6 +16,7 @@ export function buildCreativeBriefFromAnalysis(
     audience: analysis.audience,
     conversionGoal: analysis.conversionGoal,
     primaryCta: analysis.primaryCta,
+    primaryCtaHref: analysis.primaryCtaHref,
     brandTraits: analysis.brandTraits,
     visualInputs: [
       ...analysis.visualIdentityNotes,

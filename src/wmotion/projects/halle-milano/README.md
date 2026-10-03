@@ -34,7 +34,9 @@ The concept is editorial and typographic. 3D would add technical spectacle witho
 
 Primary CTA:
 
-**Book Now**
+**PRENOTA ORA**
+
+The project targets Italian (`contentLanguage: "it"`, market `IT`).
 
 The CTA links to the WhatsApp destination exposed by the current official site.
 
@@ -43,3 +45,12 @@ The CTA links to the WhatsApp destination exposed by the current official site.
 This first test intentionally uses procedural typography rather than client photography so the complete preview can run without copying or downloading client-owned image assets.
 
 A later production pass can introduce approved Halle Zine or campaign photography while preserving the same concept.
+
+
+## Conversion zone
+
+The last 24% of scroll is reserved for conversion.
+
+At progress 1.0 the Italian headline and **PRENOTA ORA** CTA remain visible and clickable.
+
+The visual composition intentionally reduces competing typography before this state.

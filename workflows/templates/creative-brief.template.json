@@ -21,5 +21,8 @@
     "Must work on mobile"
   ],
   "preferredRenderer": "cinematic-25d",
-  "intensity": 4
+  "intensity": 4,
+  "contentLanguage": "it",
+  "market": "IT",
+  "primaryCtaHref": "#contact"
 }

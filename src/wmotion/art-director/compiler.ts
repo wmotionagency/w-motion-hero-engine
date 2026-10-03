@@ -64,10 +64,10 @@ function keyframesForAsset(asset: AssetPlan, index: number) {
 }
 
 function revealForAsset(asset: AssetPlan) {
-  if (asset.role === "background") return { type: "fade" as const, from: 0, to: 0.08 };
-  if (asset.role === "subject") return { type: "wipe-x" as const, from: 0.08, to: 0.26 };
-  if (asset.role === "foreground") return { type: "fade" as const, from: 0.15, to: 0.3 };
-  return { type: "wipe-x" as const, from: 0.42, to: 0.58 };
+  if (asset.role === "background") return { type: "fade" as const, from: 0, to: 0.08, invert: false };
+  if (asset.role === "subject") return { type: "wipe-x" as const, from: 0.08, to: 0.26, invert: false };
+  if (asset.role === "foreground") return { type: "fade" as const, from: 0.15, to: 0.3, invert: false };
+  return { type: "wipe-x" as const, from: 0.42, to: 0.58, invert: false };
 }
 
 function assetPath(asset: AssetPlan) {

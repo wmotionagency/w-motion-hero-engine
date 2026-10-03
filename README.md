@@ -6,7 +6,8 @@ Reusable architecture for scroll-driven W Motion hero experiences.
 
 Step 1 — engine core ✅  
 Step 2 — configurable Cinematic 2.5D renderer ✅  
-Step 3 — real asset pipeline for Cinematic 2.5D ✅
+Step 3 — real asset pipeline for Cinematic 2.5D ✅  
+Step 4 — provider-agnostic Art Director brain ✅
 
 ## Core capabilities
 
@@ -160,20 +161,132 @@ npm run dev
 npm run build
 ```
 
+## W Motion Art Director
+
+The repository now contains a provider-agnostic creative brain under:
+
+```
+src/wmotion/art-director/
+```
+
+Its pipeline is:
+
+```
+Creative Brief
+    ↓
+Prompt Package
+    ↓
+Future LLM Provider
+    ↓
+Art Direction Plan JSON
+    ↓
+Schema Validation
+    ↓
+W Motion Quality Gates
+    ↓
+Deterministic Compiler
+    ↓
+Hero Spec
+    ↓
+Hero Engine
+```
+
+The model is never allowed to write renderer code directly.
+
+### Creative Brief
+
+The brief captures:
+
+- business and offer;
+- audience;
+- conversion goal;
+- primary CTA;
+- brand traits;
+- available visual inputs;
+- constraints;
+- preferred renderer when relevant;
+- desired visual intensity.
+
+### Creative Constitution
+
+The Art Director is constrained by permanent W Motion principles including:
+
+- one dominant idea;
+- one explicit hero moment;
+- minimal hero copy;
+- business relevance before decorative novelty;
+- 2–5 scenes;
+- deliberate mobile composition;
+- performance-aware rendering;
+- no automatic preference for 3D;
+- strong still frames across the scrub timeline;
+- reversible motion by default.
+
+### Renderer policy
+
+The Art Director has explicit rules for choosing between:
+
+- Motion 2D;
+- Cinematic 2.5D;
+- Immersive 3D.
+
+3D is only justified when true spatial continuity is essential.
+
+### Art Direction Plan
+
+A valid plan contains:
+
+- brand analysis;
+- conversion objective;
+- visual concept;
+- visual metaphor;
+- hero moment and its timeline position;
+- renderer recommendation and fallback;
+- composition, color, typography and motion direction;
+- scene plan;
+- asset plan;
+- minimal copy;
+- mobile strategy;
+- high / medium / low performance strategy.
+
+### Validation gate
+
+Plans are scored and rejected when they violate hard constraints.
+
+Examples:
+
+- invalid scene count;
+- incomplete 0→1 timeline;
+- missing CTA;
+- missing mobile strategy;
+- missing performance fallback;
+- excessive critical assets;
+- invalid schema;
+- unsuitable 3D fallback.
+
+Run:
+
+```bash
+npm run validate:art-director
+```
+
+The validation fixture currently uses a luxury automotive detailing concept called **Light Reveals Precision**.
+
+### Compiler
+
+After validation, the deterministic compiler converts the approved Art Direction Plan into a valid Hero Spec.
+
+This separation is intentional:
+
+```
+AI decides WHAT should happen.
+Validator decides WHETHER it is acceptable.
+Compiler decides HOW it becomes engine data.
+Renderer decides HOW it is drawn.
+```
+
 ## Next step
 
-The next major step is the **Art Direction layer**.
+The next major step is connecting the brain to a real LLM provider and adding an input workflow that can transform a client URL / business analysis into the Creative Brief automatically.
 
-Instead of manually writing the Hero Spec, the system will start accepting a creative brief and converting it into:
-
-- visual concept;
-- hero moment;
-- scene sequence;
-- recommended renderer;
-- asset list;
-- layer hierarchy;
-- reveal choices;
-- mobile simplification;
-- initial Hero Spec.
-
-That will be the beginning of the automated W Motion Art Director.
+That provider layer should remain replaceable so the Art Director logic does not depend on a single AI model.

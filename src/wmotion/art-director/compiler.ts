@@ -1,6 +1,7 @@
 import { heroSpecSchema, type HeroSpec } from "@/wmotion/schemas/hero.schema";
 import type { ArtDirectionPlan, AssetPlan } from "./schemas";
 import { assertValidArtDirectionPlan } from "./validator";
+import { assertValidHeroConversion } from "@/wmotion/validation/heroConversionValidator";
 
 function layerDepth(role: AssetPlan["role"]) {
   if (role === "background") return 0.05;
@@ -538,12 +539,15 @@ export function compileArtDirectionPlan(plan: ArtDirectionPlan): HeroSpec {
       })),
     {
       id: "conversion",
-      from: Math.min(
-        0.9,
-        lastScene.from + (lastScene.to - lastScene.from) * 0.42,
-      ),
-      to: 0.99,
+      from: plan.conversionStrategy.zoneStart,
+      to: 1,
+      eyebrow: plan.copy.eyebrow,
+      headline: plan.copy.headline,
+      body: plan.copy.supportingLine,
       ctaLabel: plan.copy.cta,
+      ctaHref: plan.objective.primaryCtaHref ?? "#contact",
+      persist: plan.conversionStrategy.persistentFinalCta,
+      final: true,
     },
   ].filter((cue) => cue.to > cue.from);
 
@@ -553,6 +557,15 @@ export function compileArtDirectionPlan(plan: ArtDirectionPlan): HeroSpec {
     scrollLength: plan.renderer.recommended === "immersive-3d" ? 470 : 420,
     brand: {
       name: plan.brand.name,
+    },
+    contentLanguage: plan.contentLanguage,
+    market: plan.market,
+    conversion: {
+      goal: plan.objective.conversionGoal,
+      zoneStart: plan.conversionStrategy.zoneStart,
+      zoneEnd: 1,
+      requiresPersistentCta: plan.conversionStrategy.persistentFinalCta,
+      quietFinalState: plan.conversionStrategy.quietFinalState,
     },
     scenes,
     textTimeline,
@@ -666,5 +679,7 @@ export function compileArtDirectionPlan(plan: ArtDirectionPlan): HeroSpec {
     compiled.cinematic25d = compileCinematicFallback(plan);
   }
 
-  return heroSpecSchema.parse(compiled);
+  const parsed = heroSpecSchema.parse(compiled);
+  assertValidHeroConversion(parsed);
+  return parsed;
 }

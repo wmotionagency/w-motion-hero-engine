@@ -1,0 +1,123 @@
+{
+  "version": "1.0",
+  "projectId": "example-client-hero",
+  "brand": {
+    "name": "Example Brand",
+    "analysis": {
+      "corePromise": "Turn the client's core service benefit into an immediately desirable visual transformation.",
+      "desiredEmotion": "desire and confidence",
+      "proofToImply": "The result feels controlled, premium and intentional.",
+      "visualOpportunity": "Use one transformation to express the value of the offer before the CTA appears.",
+      "visualRisks": [
+        "generic premium effects",
+        "too much copy"
+      ],
+      "conversionPrinciple": "Create desire first, then resolve into one clear action."
+    }
+  },
+  "objective": {
+    "conversionGoal": "Generate qualified enquiries",
+    "primaryCta": "Parliamo del progetto"
+  },
+  "concept": {
+    "name": "Controlled Reveal",
+    "oneSentenceIdea": "The main subject is progressively revealed through one controlled visual transformation that expresses the service value.",
+    "visualMetaphor": "Quality becomes visible when the right detail is revealed.",
+    "heroMoment": "The subject reaches one clean fully revealed frame before the final CTA resolves.",
+    "heroMomentProgress": 0.56,
+    "noveltyReason": "The reveal is tied directly to the business promise instead of being a decorative animation."
+  },
+  "renderer": {
+    "recommended": "cinematic-25d",
+    "reason": "The concept benefits from layered visual depth without requiring real-time 3D.",
+    "fallback": "motion-2d"
+  },
+  "artDirection": {
+    "preset": "product-reveal",
+    "composition": "Primary subject dominates the frame with controlled negative space for minimal copy.",
+    "colorDirection": "Dark restrained base with one brand accent and clean highlights.",
+    "typographyDirection": "Large modern grotesk headline with minimal supporting copy.",
+    "motionLanguage": "Slow controlled reveal followed by a quiet final resolve.",
+    "depthStrategy": "Separate background, subject and effect into independent layers."
+  },
+  "scenes": [
+    {
+      "id": "hook",
+      "purpose": "hook",
+      "description": "The subject begins partially concealed in a controlled opening frame.",
+      "from": 0,
+      "to": 0.32,
+      "subject": "primary subject",
+      "motionIntent": "Slow approach and initial reveal.",
+      "textIntent": "Una sola idea forte.",
+      "transitionOut": "reveal-subject"
+    },
+    {
+      "id": "hero-moment",
+      "purpose": "payoff",
+      "description": "The main transformation reaches the strongest visual frame.",
+      "from": 0.32,
+      "to": 0.68,
+      "subject": "revealed subject",
+      "motionIntent": "Complete the reveal and stabilize the composition.",
+      "transitionOut": "resolve-copy"
+    },
+    {
+      "id": "conversion",
+      "purpose": "conversion",
+      "description": "The composition simplifies and resolves into the main action.",
+      "from": 0.68,
+      "to": 1,
+      "subject": "final branded frame",
+      "motionIntent": "Reduce motion and prioritize the CTA."
+    }
+  ],
+  "assets": [
+    {
+      "id": "hero-background",
+      "role": "background",
+      "type": "image",
+      "purpose": "Establish the visual environment.",
+      "sourceStrategy": "generated",
+      "generationBrief": "Premium minimal environment matching the master art direction.",
+      "mobileStrategy": "crop",
+      "priority": "critical"
+    },
+    {
+      "id": "hero-subject",
+      "role": "subject",
+      "type": "transparent-image",
+      "purpose": "Primary visual subject.",
+      "sourceStrategy": "client",
+      "mobileStrategy": "replace",
+      "priority": "critical"
+    },
+    {
+      "id": "reveal-effect",
+      "role": "effect",
+      "type": "css",
+      "purpose": "Create the controlled hero reveal.",
+      "sourceStrategy": "procedural",
+      "mobileStrategy": "simplify",
+      "priority": "important"
+    }
+  ],
+  "copy": {
+    "eyebrow": "Example Brand",
+    "headline": "Una sola idea forte.",
+    "supportingLine": "Un'esperienza visiva costruita intorno al valore che il cliente deve percepire.",
+    "cta": "Parliamo del progetto"
+  },
+  "mobileStrategy": {
+    "compositionChange": "Center the subject, shorten its travel and move copy toward the lower third.",
+    "motionSimplification": "Reduce parallax and simplify secondary effects while preserving the reveal.",
+    "hiddenAssetIds": [],
+    "targetScrollLengthVh": 290
+  },
+  "performanceStrategy": {
+    "high": "Full layered reveal with pointer response.",
+    "medium": "Keep critical layers and reduce secondary motion.",
+    "low": "Use Motion 2D fallback with a simple reveal and clear CTA.",
+    "maxCriticalAssets": 3
+  }
+}

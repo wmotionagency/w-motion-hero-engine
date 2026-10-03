@@ -5,6 +5,7 @@ import {
   validateClientAnalysisAgainstResearch,
 } from "../src/wmotion/workflow/clientAnalysisPipeline";
 import { heroSpecSchema } from "../src/wmotion/schemas/hero.schema";
+import { validateHeroConversion } from "../src/wmotion/validation/heroConversionValidator";
 import { halleMilanoResearch } from "../src/wmotion/projects/halle-milano/research";
 import { halleMilanoAnalysis } from "../src/wmotion/projects/halle-milano/analysis";
 import { halleMilanoBrief } from "../src/wmotion/projects/halle-milano/brief";
@@ -68,11 +69,34 @@ assert(
   hero.motion2d?.elements.some((element) => element.label === "HALLE"),
   "Halle hero is missing the central HALLE lockup.",
 );
+assert(hero.contentLanguage === "it", "Halle hero must target Italian.");
+assert(hero.market === "IT", "Halle hero must target the Italian market.");
+
+const finalCue = hero.textTimeline.find((cue) => cue.final);
+assert(finalCue, "Halle hero must contain a final conversion cue.");
+assert(finalCue.persist, "Halle final cue must persist through progress 1.0.");
+assert(finalCue.to === 1, "Halle final cue must reach progress 1.0.");
 assert(
-  hero.textTimeline.some(
-    (cue) => cue.ctaLabel === "Book Now" && Boolean(cue.ctaHref),
-  ),
-  "Halle hero must contain a clickable Book Now CTA.",
+  finalCue.ctaLabel === "PRENOTA ORA" && Boolean(finalCue.ctaHref),
+  "Halle hero must contain a persistent clickable PRENOTA ORA CTA.",
+);
+assert(
+  finalCue.headline === "Questo, quello e tutto ciò che c'è in mezzo.",
+  "Halle final headline must be localized in Italian.",
+);
+assert(
+  hero.conversion?.zoneStart === 0.76 &&
+    hero.conversion.zoneEnd === 1 &&
+    hero.conversion.requiresPersistentCta,
+  "Halle hero must reserve the final conversion zone.",
+);
+
+const conversionValidation = validateHeroConversion(hero);
+assert(
+  conversionValidation.valid,
+  `Halle conversion validation failed: ${conversionValidation.issues
+    .map((issue) => `[${issue.code}] ${issue.message}`)
+    .join(", ")}`,
 );
 assert(
   hero.responsive.mobile?.scrollLength === 270,
@@ -98,6 +122,9 @@ console.log(
       motionElements: hero.motion2d?.elements.length ?? 0,
       typographyPrimitive: true,
       clickableBookingCta: true,
+      persistentFinalCta: true,
+      contentLanguage: hero.contentLanguage,
+      conversionScore: conversionValidation.score,
       mobileScrollLength: hero.responsive.mobile?.scrollLength,
       selfContainedPreview: true,
     },

@@ -76,5 +76,7 @@
   "performanceFallback": "pass",
   "reducedMotion": "pass",
   "issues": [],
-  "finalStatus": "pass"
+  "finalStatus": "pass",
+  "contentLanguage": "pass",
+  "finalConversionState": "pass"
 }

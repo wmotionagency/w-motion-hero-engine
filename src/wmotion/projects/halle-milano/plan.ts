@@ -3,6 +3,8 @@ import { artDirectionPlanSchema } from "@/wmotion/art-director/schemas";
 export const halleMilanoPlan = artDirectionPlanSchema.parse({
   version: "1.0",
   projectId: "halle-milano-hero",
+  contentLanguage: "it",
+  market: "IT",
   brand: {
     name: "Halle",
     analysis: {
@@ -21,7 +23,8 @@ export const halleMilanoPlan = artDirectionPlanSchema.parse({
   },
   objective: {
     conversionGoal: "Book an appointment",
-    primaryCta: "Book Now",
+    primaryCta: "PRENOTA ORA",
+    primaryCtaHref: "https://wa.me/3513211726",
   },
   concept: {
     name: "Between States",
@@ -53,7 +56,7 @@ export const halleMilanoPlan = artDirectionPlanSchema.parse({
       to: 0.30,
       subject: "contrasting identity words",
       motionIntent: "Words enter from opposing horizontal directions with restrained pointer response.",
-      textIntent: "No fixed category.",
+      textIntent: "Nessuna etichetta.",
       transitionOut: "categories-cross",
     },
     {
@@ -107,9 +110,9 @@ export const halleMilanoPlan = artDirectionPlanSchema.parse({
   ],
   copy: {
     eyebrow: "HALLE · MILANO",
-    headline: "This, that and everything in between.",
-    supportingLine: "Cut, color and identity without fixed categories.",
-    cta: "Book Now",
+    headline: "Questo, quello e tutto ciò che c'è in mezzo.",
+    supportingLine: "Taglio, colore e identità senza categorie fisse.",
+    cta: "PRENOTA ORA",
   },
   mobileStrategy: {
     compositionChange: "Stack the opposing words vertically around a centered HALLE lockup and shorten all horizontal travel.",
@@ -120,7 +123,12 @@ export const halleMilanoPlan = artDirectionPlanSchema.parse({
   performanceStrategy: {
     high: "Full kinetic typography, two axis lines and subtle pointer offset.",
     medium: "Same Motion 2D renderer with lower pointer influence and reduced travel distance.",
-    low: "Static HALLE lockup, short fade between contrast words and immediate Book Now CTA.",
+    low: "Static HALLE lockup, short fade between contrast words and immediate PRENOTA ORA CTA.",
     maxCriticalAssets: 2,
+  },
+  conversionStrategy: {
+    zoneStart: 0.76,
+    persistentFinalCta: true,
+    quietFinalState: true,
   },
 });

@@ -23,14 +23,18 @@ Obiettivo:
 prenotazioni
 ```
 
-Work then follows `create-hero.md`.
+Work first follows `analyze-client-url.md`, then continues with `create-hero.md`.
 
 ## Workflow
 
 ```
 Client URL / supplied brief
         ↓
-Client Analysis
+Client Research Bundle
+        ↓
+Evidence validation
+        ↓
+Client Analysis validation
         ↓
 Creative Brief
         ↓
@@ -84,6 +88,7 @@ The validator, compiler and renderers must not depend on a specific model.
 Run:
 
 ```bash
+npm run validate:client-analysis
 npm run validate:art-director
 npm run validate:workflow
 npm run build

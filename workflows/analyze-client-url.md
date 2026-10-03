@@ -140,12 +140,15 @@ The Client Analysis may synthesize the evidence, but it must not contradict expl
 Keep:
 
 - brandName;
+- contentLanguage;
+- market;
 - businessType;
 - offer;
 - services/products;
 - audience;
 - conversionGoal;
 - primaryCta;
+- primaryCtaHref when discoverable;
 - brandTraits;
 - palette;
 - visual identity;
@@ -185,6 +188,8 @@ Then continue with:
 ## Important boundary
 
 This phase performs research and synthesis only.
+
+Before leaving this phase, distinguish source language from target content language. A local Italian business may use English brand copy while still requiring Italian conversion copy.
 
 Do NOT:
 

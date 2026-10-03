@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "validate:art-director": "tsx scripts/validate-art-director.ts"
   },
   "dependencies": {
     "@rive-app/react-canvas": "latest",
@@ -24,6 +25,7 @@
     "@types/three": "latest",
     "eslint": "latest",
     "eslint-config-next": "latest",
-    "typescript": "latest"
+    "typescript": "latest",
+    "tsx": "latest"
   }
 }

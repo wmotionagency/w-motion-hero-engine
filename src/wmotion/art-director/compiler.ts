@@ -104,6 +104,234 @@ function modelPath(asset: AssetPlan) {
   return `/hero-assets/${bucket}/${asset.id}.glb`;
 }
 
+
+function motionAssetPath(asset: AssetPlan) {
+  if (asset.type === "image" || asset.type === "transparent-image") {
+    return assetPath(asset);
+  }
+
+  const bucket =
+    asset.sourceStrategy === "client"
+      ? "client"
+      : asset.sourceStrategy === "designed"
+        ? "designed"
+        : "generated";
+
+  if (asset.type === "svg") {
+    return `/hero-assets/${bucket}/${asset.id}.svg`;
+  }
+
+  if (asset.type === "rive") {
+    return `/hero-assets/${bucket}/${asset.id}.riv`;
+  }
+
+  return undefined;
+}
+
+function compileMotion2D(plan: ArtDirectionPlan) {
+  const sourceAssets = plan.assets.filter((asset) => asset.type !== "3d-model");
+
+  const assets = sourceAssets.length
+    ? sourceAssets.slice(0, 6)
+    : [
+        {
+          id: "graphic-subject",
+          role: "subject" as const,
+          type: "css" as const,
+          purpose: "Procedural graphic subject",
+          sourceStrategy: "procedural" as const,
+          mobileStrategy: "simplify" as const,
+          priority: "critical" as const,
+        },
+      ];
+
+  const elements = assets.map((asset, index) => {
+    const src = motionAssetPath(asset);
+    const hiddenOnMobile =
+      asset.mobileStrategy === "hide" ||
+      plan.mobileStrategy.hiddenAssetIds.includes(asset.id);
+
+    const kind =
+      asset.type === "image" || asset.type === "transparent-image"
+        ? ("image" as const)
+        : asset.type === "svg"
+          ? ("svg-mark" as const)
+          : asset.type === "rive"
+            ? ("rive" as const)
+            : asset.role === "background"
+              ? ("rect" as const)
+              : asset.role === "effect"
+                ? ("line" as const)
+                : index % 2 === 0
+                  ? ("circle" as const)
+                  : ("panel" as const);
+
+    const baseX =
+      asset.role === "subject" ? 46 : asset.role === "effect" ? -80 : 0;
+
+    const style =
+      kind === "line"
+        ? {
+            width: "min(72vw, 980px)",
+            height: "2px",
+            background:
+              "linear-gradient(90deg, transparent, rgba(105,190,255,.95), transparent)",
+            borderRadius: "999px",
+            mixBlendMode: "screen" as const,
+          }
+        : kind === "panel"
+          ? {
+              width: "min(62vw, 860px)",
+              height: "min(44vh, 460px)",
+              background: "rgba(22,55,110,.12)",
+              borderColor: "rgba(180,220,255,.18)",
+              borderWidth: 1,
+              borderRadius: "32px",
+              mixBlendMode: "normal" as const,
+            }
+          : {
+              mixBlendMode:
+                asset.role === "effect"
+                  ? ("screen" as const)
+                  : ("normal" as const),
+            };
+
+    const element = {
+      id: `motion-${asset.id}`,
+      kind,
+      role: asset.role,
+      ...(kind === "image" && src
+        ? {
+            asset: {
+              src,
+              alt: "",
+              fit:
+                asset.role === "background"
+                  ? ("cover" as const)
+                  : ("contain" as const),
+              position: "50% 50%",
+              preload: asset.priority === "critical",
+            },
+          }
+        : {}),
+      ...(kind === "rive" && src ? { riveSrc: src } : {}),
+      label: kind === "panel" ? plan.brand.name : undefined,
+      style,
+      visibility:
+        asset.role === "effect"
+          ? { from: 0.28, to: 0.82 }
+          : undefined,
+      reveal:
+        asset.role === "subject"
+          ? { type: "wipe-x" as const, from: 0.08, to: 0.28, invert: false }
+          : asset.role === "effect"
+            ? { type: "fade" as const, from: 0.25, to: 0.42, invert: false }
+            : { type: "fade" as const, from: 0, to: 0.12, invert: false },
+      pointerInfluence:
+        asset.role === "subject" ? 0.14 : asset.role === "effect" ? 0.08 : 0.04,
+      keyframes:
+        asset.role === "subject"
+          ? [
+              { at: 0, x: 110 + baseX, y: 44, scale: 0.78, opacity: 0 },
+              { at: 0.22, x: 36, y: 12, scale: 0.92, opacity: 1 },
+              {
+                at: plan.concept.heroMomentProgress,
+                x: 0,
+                y: 0,
+                scale: 1.08,
+                opacity: 1,
+              },
+              { at: 0.82, x: -56, y: -8, scale: 1.22, opacity: 0.3 },
+              { at: 1, x: -100, y: -14, scale: 1.32, opacity: 0 },
+            ]
+          : asset.role === "effect"
+            ? [
+                { at: 0, x: -140, y: 0, scale: 0.8, opacity: 0 },
+                { at: 0.32, x: -90, y: 0, scale: 0.9, opacity: 0 },
+                {
+                  at: plan.concept.heroMomentProgress,
+                  x: 0,
+                  y: 0,
+                  scale: 1,
+                  opacity: 0.9,
+                },
+                { at: 0.78, x: 100, y: -6, scale: 1.1, opacity: 0.2 },
+                { at: 1, x: 140, y: -10, scale: 1.15, opacity: 0 },
+              ]
+            : [
+                { at: 0, x: 0, y: 16, scale: 1, opacity: 0.25 },
+                { at: 0.35, x: -8, y: 4, scale: 1.04, opacity: 0.7 },
+                { at: 0.7, x: 8, y: -6, scale: 1.08, opacity: 0.55 },
+                { at: 1, x: 0, y: -10, scale: 1.12, opacity: 0.24 },
+              ],
+      mobile: {
+        hidden: hiddenOnMobile,
+        scaleMultiplier:
+          asset.mobileStrategy === "simplify" ||
+          asset.mobileStrategy === "crop"
+            ? 0.84
+            : 1,
+        pointerInfluence: 0.03,
+      },
+    };
+
+    return element;
+  });
+
+  if (!elements.some((element) => element.role === "effect")) {
+    elements.push({
+      id: "motion-accent-line",
+      kind: "line" as const,
+      role: "effect" as const,
+      style: {
+        width: "min(70vw, 960px)",
+        height: "2px",
+        background:
+          "linear-gradient(90deg, transparent, rgba(92,179,255,.9), transparent)",
+        borderRadius: "999px",
+        mixBlendMode: "screen" as const,
+      },
+      visibility: { from: 0.28, to: 0.82 },
+      reveal: {
+        type: "wipe-x" as const,
+        from: 0.3,
+        to: 0.55,
+        invert: false,
+      },
+      pointerInfluence: 0.04,
+      keyframes: [
+        { at: 0, x: -120, y: 40, scale: 0.7, opacity: 0 },
+        { at: 0.35, x: -60, y: 20, scale: 0.85, opacity: 0.2 },
+        {
+          at: plan.concept.heroMomentProgress,
+          x: 0,
+          y: 0,
+          scale: 1,
+          opacity: 0.9,
+        },
+        { at: 0.82, x: 80, y: -14, scale: 1.15, opacity: 0.2 },
+        { at: 1, x: 120, y: -20, scale: 1.2, opacity: 0 },
+      ],
+      mobile: {
+        hidden: false,
+        scaleMultiplier: 0.9,
+        pointerInfluence: 0.01,
+      },
+    });
+  }
+
+  return {
+    preset:
+      plan.artDirection.preset === "editorial-light"
+        ? ("editorial" as const)
+        : plan.artDirection.preset === "spatial-ui"
+          ? ("product-ui" as const)
+          : ("brand-motion" as const),
+    pointerStrength: 0.18,
+    elements,
+  };
+}
+
 function compileCinematicFallback(plan: ArtDirectionPlan) {
   const fallbackAssets = plan.assets.filter((asset) => asset.type !== "3d-model");
 
@@ -352,6 +580,8 @@ export function compileArtDirectionPlan(plan: ArtDirectionPlan): HeroSpec {
       },
     },
   };
+
+  compiled.motion2d = compileMotion2D(plan);
 
   if (plan.renderer.recommended === "cinematic-25d") {
     compiled.cinematic25d = compileCinematicFallback(plan);

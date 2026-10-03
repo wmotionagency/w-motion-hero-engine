@@ -11,10 +11,37 @@ function lerp(a = 0, b = 0, t: number) {
   return a + (b - a) * t;
 }
 
-function sampleLayer(layer: CinematicLayer, progress: number) {
+type SampledTransform = {
+  x: number;
+  y: number;
+  scale: number;
+  rotate: number;
+  opacity: number;
+  blur: number;
+};
+
+function normalizeFrame(
+  frame: Partial<SampledTransform>,
+  fallback: Partial<SampledTransform> = {},
+): SampledTransform {
+  return {
+    x: frame.x ?? fallback.x ?? 0,
+    y: frame.y ?? fallback.y ?? 0,
+    scale: frame.scale ?? fallback.scale ?? 1,
+    rotate: frame.rotate ?? fallback.rotate ?? 0,
+    opacity: frame.opacity ?? fallback.opacity ?? 1,
+    blur: frame.blur ?? fallback.blur ?? 0,
+  };
+}
+
+function sampleLayer(layer: CinematicLayer, progress: number): SampledTransform {
   const frames = layer.keyframes;
-  if (progress <= frames[0].at) return { ...layer.initial, ...frames[0] };
-  if (progress >= frames[frames.length - 1].at) return { ...layer.initial, ...frames[frames.length - 1] };
+  const base = normalizeFrame(layer.initial);
+
+  if (progress <= frames[0].at) return normalizeFrame(frames[0], base);
+  if (progress >= frames[frames.length - 1].at) {
+    return normalizeFrame(frames[frames.length - 1], base);
+  }
 
   const nextIndex = frames.findIndex((frame) => progress <= frame.at);
   const a = frames[Math.max(0, nextIndex - 1)];
@@ -22,13 +49,16 @@ function sampleLayer(layer: CinematicLayer, progress: number) {
   const span = Math.max(0.0001, b.at - a.at);
   const t = (progress - a.at) / span;
 
+  const from = normalizeFrame(a, base);
+  const to = normalizeFrame(b, from);
+
   return {
-    x: lerp(a.x ?? layer.initial.x ?? 0, b.x ?? a.x ?? layer.initial.x ?? 0, t),
-    y: lerp(a.y ?? layer.initial.y ?? 0, b.y ?? a.y ?? layer.initial.y ?? 0, t),
-    scale: lerp(a.scale ?? layer.initial.scale ?? 1, b.scale ?? a.scale ?? layer.initial.scale ?? 1, t),
-    rotate: lerp(a.rotate ?? layer.initial.rotate ?? 0, b.rotate ?? a.rotate ?? layer.initial.rotate ?? 0, t),
-    opacity: lerp(a.opacity ?? layer.initial.opacity ?? 1, b.opacity ?? a.opacity ?? layer.initial.opacity ?? 1, t),
-    blur: lerp(a.blur ?? layer.initial.blur ?? 0, b.blur ?? a.blur ?? layer.initial.blur ?? 0, t),
+    x: lerp(from.x, to.x, t),
+    y: lerp(from.y, to.y, t),
+    scale: lerp(from.scale, to.scale, t),
+    rotate: lerp(from.rotate, to.rotate, t),
+    opacity: lerp(from.opacity, to.opacity, t),
+    blur: lerp(from.blur, to.blur, t),
   };
 }
 

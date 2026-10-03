@@ -1,0 +1,25 @@
+{
+  "projectId": "example-client-hero",
+  "brandName": "Example Brand",
+  "businessType": "Premium service business",
+  "offer": "A premium service with a clear visual transformation",
+  "audience": "Design-conscious customers looking for a premium result",
+  "conversionGoal": "Generate qualified enquiries",
+  "primaryCta": "Parliamo del progetto",
+  "brandTraits": [
+    "premium",
+    "precise",
+    "modern"
+  ],
+  "visualInputs": [
+    "Dark premium visual language",
+    "Controlled visual reveal",
+    "Existing logo"
+  ],
+  "constraints": [
+    "Minimal hero copy",
+    "Must work on mobile"
+  ],
+  "preferredRenderer": "cinematic-25d",
+  "intensity": 4
+}

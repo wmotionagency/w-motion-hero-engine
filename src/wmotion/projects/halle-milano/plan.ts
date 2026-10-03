@@ -22,7 +22,7 @@ export const halleMilanoPlan = artDirectionPlanSchema.parse({
     },
   },
   objective: {
-    conversionGoal: "Book an appointment",
+    conversionGoal: "Prenotare un appuntamento",
     primaryCta: "PRENOTA ORA",
     primaryCtaHref: "https://wa.me/3513211726",
   },

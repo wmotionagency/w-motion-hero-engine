@@ -17,6 +17,19 @@ export type ClientAnalysisValidationResult = {
   issues: ClientAnalysisValidationIssue[];
 };
 
+export type ClientResearchValidationResult =
+  | {
+      valid: false;
+      score: number;
+      issues: ClientAnalysisValidationIssue[];
+    }
+  | {
+      valid: boolean;
+      score: number;
+      issues: ClientAnalysisValidationIssue[];
+      bundle: ClientResearchBundle;
+    };
+
 const CRITICAL_FIELDS = [
   "brandName",
   "businessType",
@@ -33,7 +46,9 @@ function factSupportsField(
   return facts.some((fact) => fact.field === field);
 }
 
-export function validateClientResearchBundle(input: unknown) {
+export function validateClientResearchBundle(
+  input: unknown,
+): ClientResearchValidationResult {
   const parsed = clientResearchBundleSchema.safeParse(input);
 
   if (!parsed.success) {
@@ -120,7 +135,7 @@ export function validateClientAnalysisAgainstResearch(
 ): ClientAnalysisValidationResult {
   const researchResult = validateClientResearchBundle(researchInput);
 
-  if (!researchResult.valid || !("bundle" in researchResult)) {
+  if (!("bundle" in researchResult)) {
     return {
       valid: false,
       score: researchResult.score,
@@ -128,6 +143,15 @@ export function validateClientAnalysisAgainstResearch(
     };
   }
 
+  if (!researchResult.valid) {
+    return {
+      valid: false,
+      score: researchResult.score,
+      issues: researchResult.issues,
+    };
+  }
+
+  const researchBundle = researchResult.bundle;
   const parsedAnalysis = clientAnalysisSchema.safeParse(analysisInput);
 
   if (!parsedAnalysis.success) {
@@ -143,13 +167,13 @@ export function validateClientAnalysisAgainstResearch(
   }
 
   const analysis = parsedAnalysis.data;
-  const facts = researchResult.bundle.facts;
+  const facts = researchBundle.facts;
   const issues: ClientAnalysisValidationIssue[] = [];
   let score = researchResult.score;
 
   if (
-    researchResult.bundle.canonicalUrl &&
-    analysis.sourceUrl !== researchResult.bundle.canonicalUrl
+    researchBundle.canonicalUrl &&
+    analysis.sourceUrl !== researchBundle.canonicalUrl
   ) {
     issues.push({
       severity: "warning",

@@ -7,9 +7,26 @@ export class AssetLoader {
         (url) =>
           new Promise<void>((resolve) => {
             const image = new Image();
-            image.onload = () => resolve();
+
+            const finish = async () => {
+              try {
+                if ("decode" in image) {
+                  await image.decode();
+                }
+              } catch {
+                // Decoding can reject for already-loaded SVGs or browser-specific cases.
+              } finally {
+                resolve();
+              }
+            };
+
+            image.onload = () => void finish();
             image.onerror = () => resolve();
             image.src = url;
+
+            if (image.complete) {
+              void finish();
+            }
           }),
       ),
     );

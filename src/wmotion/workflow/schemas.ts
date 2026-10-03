@@ -1,5 +1,65 @@
 import { z } from "zod";
 
+
+export const clientSourcePageSchema = z.object({
+  url: z.string().url(),
+  title: z.string().min(1),
+  sourceType: z.enum([
+    "user-supplied-material",
+    "official-website",
+    "official-business-profile",
+    "official-social",
+    "secondary-source",
+  ]),
+  purpose: z.enum([
+    "identity",
+    "offer",
+    "services",
+    "about",
+    "location",
+    "conversion",
+    "visual",
+    "discovery",
+  ]),
+  notes: z.array(z.string().min(1)).default([]),
+});
+
+export const clientEvidenceFactSchema = z.object({
+  field: z.enum([
+    "brandName",
+    "businessType",
+    "location",
+    "offer",
+    "servicesOrProducts",
+    "audience",
+    "conversionGoal",
+    "primaryCta",
+    "brandTraits",
+    "palette",
+    "visualIdentityNotes",
+    "visualOpportunities",
+    "constraints",
+    "availableAssets",
+    "currentSiteFriction",
+    "preserve",
+  ]),
+  value: z.string().min(1),
+  sourceUrl: z.string().url(),
+  status: z.enum(["explicit", "inferred"]),
+  confidence: z.enum(["high", "medium", "low"]),
+  rationale: z.string().min(3),
+});
+
+export const clientResearchBundleSchema = z.object({
+  projectId: z.string().min(1),
+  requestedUrl: z.string().url(),
+  canonicalUrl: z.string().url().optional(),
+  pages: z.array(clientSourcePageSchema).min(1).max(20),
+  facts: z.array(clientEvidenceFactSchema).min(4).max(80),
+  unresolvedQuestions: z.array(z.string().min(1)).default([]),
+  researchNotes: z.array(z.string().min(1)).default([]),
+});
+
 export const clientAnalysisSchema = z.object({
   projectId: z.string().min(1),
   sourceUrl: z.string().url().optional(),
@@ -52,5 +112,6 @@ export const qaReportSchema = z.object({
   finalStatus: z.enum(["pass", "needs-fixes"]),
 });
 
+export type ClientResearchBundle = z.infer<typeof clientResearchBundleSchema>;
 export type ClientAnalysis = z.infer<typeof clientAnalysisSchema>;
 export type QAReport = z.infer<typeof qaReportSchema>;

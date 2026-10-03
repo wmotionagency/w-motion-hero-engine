@@ -71,11 +71,18 @@ function revealForAsset(asset: AssetPlan) {
 }
 
 function assetPath(asset: AssetPlan) {
-  if (asset.type === "image" || asset.type === "transparent-image") {
-    return `/hero-assets/generated/${asset.id}.webp`;
+  if (asset.type !== "image" && asset.type !== "transparent-image") {
+    return undefined;
   }
 
-  return undefined;
+  const bucket =
+    asset.sourceStrategy === "client"
+      ? "client"
+      : asset.sourceStrategy === "designed"
+        ? "designed"
+        : "generated";
+
+  return `/hero-assets/${bucket}/${asset.id}.webp`;
 }
 
 export function compileArtDirectionPlan(plan: ArtDirectionPlan): HeroSpec {
@@ -177,6 +184,7 @@ export function compileArtDirectionPlan(plan: ArtDirectionPlan): HeroSpec {
                 },
               }
             : {}),
+          initial: {},
           reveal: revealForAsset(asset),
           keyframes: keyframesForAsset(asset, index),
           mobile: {

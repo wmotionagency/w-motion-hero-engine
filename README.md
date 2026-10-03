@@ -723,3 +723,39 @@ Visual QA
 ```
 
 That test should reveal which parts of the system need refinement based on real creative output rather than additional abstract infrastructure.
+
+
+## First real client test — Halle Milano
+
+The first end-to-end client project lives under:
+
+```
+src/wmotion/projects/halle-milano/
+```
+
+Preview route:
+
+```
+/projects/halle-milano
+```
+
+Selected concept:
+
+**Between States**
+
+Renderer:
+
+**Motion 2D**
+
+The concept uses Halle's own cultural dualities as kinetic typography and resolves them into one central HALLE identity before the booking CTA.
+
+This test also exposed and added two reusable engine capabilities:
+
+- Motion 2D typography primitives;
+- clickable CTA destinations.
+
+Validate with:
+
+```bash
+npm run validate:halle-test
+```

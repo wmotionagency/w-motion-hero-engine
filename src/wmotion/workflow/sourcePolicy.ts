@@ -19,6 +19,8 @@ export const CLIENT_SOURCE_POLICY = {
     "When a value is inferred rather than explicit, label it as inferred and assign medium or low confidence.",
     "Do not treat visual taste as a factual brand claim. Separate observed visual identity from creative opportunity.",
     "Keep evidence snippets short and paraphrased. The workflow needs provenance, not copied webpages.",
+    "Treat source language and target content language as separate decisions; prioritize the intended customer-facing market or explicit client instruction.",
+    "When a primary CTA is a real link, preserve its destination so the final Hero Spec can remain actionable.",
   ],
 } as const;
 

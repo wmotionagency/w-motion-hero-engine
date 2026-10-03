@@ -7,7 +7,8 @@ Reusable architecture for scroll-driven W Motion hero experiences.
 Step 1 — engine core ✅  
 Step 2 — configurable Cinematic 2.5D renderer ✅  
 Step 3 — real asset pipeline for Cinematic 2.5D ✅  
-Step 4 — provider-agnostic Art Director brain ✅
+Step 4 — provider-agnostic Art Director brain ✅  
+Step 5 — scrub-driven Immersive 3D renderer ✅
 
 ## Core capabilities
 
@@ -285,8 +286,83 @@ Compiler decides HOW it becomes engine data.
 Renderer decides HOW it is drawn.
 ```
 
+## Immersive 3D
+
+The engine now includes a real Three.js renderer under:
+
+```
+src/wmotion/renderers/immersive-3d/
+```
+
+The 3D renderer is driven by the same normalized `0 → 1` scrub progress as Cinematic 2.5D.
+
+It supports:
+
+- camera position / target / FOV keyframes;
+- reversible camera travel;
+- procedural sphere / box / torus / icosahedron subjects;
+- GLB / glTF model loading;
+- object position / rotation / scale / opacity keyframes;
+- scene-specific object visibility;
+- ambient, directional and point lights;
+- deterministic scroll-driven particles;
+- pointer influence on camera and subjects;
+- desktop / mobile scale overrides;
+- high / medium / mobile pixel-ratio budgets;
+- Three.js resource disposal;
+- WebGL2 detection with 2.5D fallback.
+
+The renderer does not run an independent cinematic timeline. Every important state is sampled from scroll progress, so moving the page backward reverses the experience.
+
+### 3D demo
+
+Run the project and open:
+
+```
+/3d
+```
+
+The current demo performs:
+
+```
+APPROACH
+camera moves toward subject
+        ↓
+CROSSING
+camera passes through a spatial ring
+first subject exits
+        ↓
+PAYOFF
+second subject appears
+camera settles
+headline + CTA resolve
+```
+
+The demo also contains a Cinematic 2.5D fallback.
+
+### Art Director → 3D
+
+The Art Director compiler now produces an `immersive3d` Hero Spec when the approved plan requires true spatial continuity.
+
+A valid immersive plan can define 3D-model and shader assets. The compiler generates:
+
+- camera timeline;
+- 3D objects;
+- lighting;
+- particles;
+- pixel-ratio strategy;
+- Cinematic 2.5D fallback.
+
+An Immersive 3D plan without a lighter fallback is rejected by the quality gate.
+
 ## Next step
 
-The next major step is connecting the brain to a real LLM provider and adding an input workflow that can transform a client URL / business analysis into the Creative Brief automatically.
+The next major step is completing **Motion 2D** as a production renderer, so all three execution modes selected by the Art Director are real:
 
-That provider layer should remain replaceable so the Art Director logic does not depend on a single AI model.
+```
+Motion 2D
+Cinematic 2.5D
+Immersive 3D
+```
+
+After that, the provider layer can be connected to a real LLM without any renderer choice pointing to a placeholder.

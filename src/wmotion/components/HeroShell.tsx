@@ -1,14 +1,20 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { HeroController } from "@/wmotion/core/HeroController";
-import type { HeroRenderer, HeroRuntimeState, RendererType } from "@/wmotion/core/types";
+import type {
+  HeroRenderer,
+  HeroRuntimeState,
+  RendererType,
+  ResponsiveVariant,
+} from "@/wmotion/core/types";
 import { Cinematic25DRenderer } from "@/wmotion/renderers/cinematic-25d/Cinematic25DRenderer";
 import { Immersive3DRenderer } from "@/wmotion/renderers/immersive-3d/Immersive3DRenderer";
 import { Motion2DRenderer } from "@/wmotion/renderers/motion-2d/Motion2DRenderer";
-import type { HeroSpec } from "@/wmotion/schemas/hero.schema";
+import type { CinematicLayer, HeroSpec } from "@/wmotion/schemas/hero.schema";
 import { HeroTextLayer } from "./HeroTextLayer";
 import { ScrollIndicator } from "./ScrollIndicator";
 
@@ -49,8 +55,42 @@ function initialRuntime(spec: HeroSpec): HeroRuntimeState {
   };
 }
 
-function LayerVisual({ kind }: { kind: string }) {
-  return <span className={`cinematic-shape cinematic-shape--${kind}`} aria-hidden="true" />;
+function LayerVisual({
+  layer,
+  responsive,
+}: {
+  layer: CinematicLayer;
+  responsive: ResponsiveVariant;
+}) {
+  if (layer.kind !== "image" || !layer.asset) {
+    return <span className={`cinematic-shape cinematic-shape--${layer.kind}`} aria-hidden="true" />;
+  }
+
+  const src =
+    responsive === "mobile" && layer.mobile?.assetSrc
+      ? layer.mobile.assetSrc
+      : layer.asset.src;
+
+  const position =
+    responsive === "mobile" && layer.mobile?.position
+      ? layer.mobile.position
+      : layer.asset.position;
+
+  return (
+    <span className={`cinematic-asset cinematic-asset--${layer.role}`} aria-hidden="true">
+      <Image
+        src={src}
+        alt={layer.asset.alt}
+        fill
+        sizes="100vw"
+        priority={layer.asset.preload}
+        style={{
+          objectFit: layer.asset.fit,
+          objectPosition: position,
+        }}
+      />
+    </span>
+  );
 }
 
 export function HeroShell({ spec }: { spec: HeroSpec }) {
@@ -122,24 +162,33 @@ export function HeroShell({ spec }: { spec: HeroSpec }) {
     };
   }, [controller, spec]);
 
+  const preset = spec.cinematic25d?.preset ?? "neutral";
+
   return (
     <main>
       <section
         ref={zoneRef}
         className="hero-scroll-zone"
+        data-preset={preset}
         style={{ "--hero-scroll-length": `${scrollLength}vh` } as React.CSSProperties}
       >
         <div className="hero-sticky">
-          <div ref={stageRef} className="hero-stage" data-renderer={spec.renderer}>
-            <div className="cinematic-world" aria-hidden="true">
+          <div
+            ref={stageRef}
+            className="hero-stage"
+            data-renderer={spec.renderer}
+            data-preset={preset}
+          >
+            <div className="cinematic-world" data-preset={preset} aria-hidden="true">
               {(spec.cinematic25d?.layers ?? []).map((layer) => (
                 <div
                   key={layer.id}
-                  className={`cinematic-layer cinematic-layer--${layer.kind} ${layer.className ?? ""}`}
+                  className={`cinematic-layer cinematic-layer--${layer.kind} cinematic-layer--role-${layer.role} ${layer.className ?? ""}`}
                   data-layer-id={layer.id}
+                  data-role={layer.role}
                   style={{ zIndex: Math.round(layer.depth * 100) }}
                 >
-                  <LayerVisual kind={layer.kind} />
+                  <LayerVisual layer={layer} responsive={runtime.responsive} />
                 </div>
               ))}
             </div>
@@ -160,6 +209,7 @@ export function HeroShell({ spec }: { spec: HeroSpec }) {
             <span>Performance: {runtime.performance}</span>
             <span>Responsive: {runtime.responsive}</span>
             <span>Renderer: {selectRenderer(spec, runtime)}</span>
+            <span>Preset: {preset}</span>
             <span>
               Pointer: {runtime.pointer.x.toFixed(2)}, {runtime.pointer.y.toFixed(2)}
             </span>

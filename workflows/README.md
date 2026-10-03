@@ -95,3 +95,21 @@ npm run build
 ```
 
 All three must pass before a structural workflow change is accepted.
+
+
+## Persistent final conversion state
+
+Commercial heroes now reserve a final conversion zone, normally starting around 75–80% scroll progress.
+
+The final cue must:
+
+- use the configured `contentLanguage`;
+- remain visible at progress 1.0;
+- include a clickable CTA destination;
+- set `persist: true`;
+- set `final: true`;
+- sit inside a quieter final composition.
+
+The renderer is also hidden until its initial progress state has been applied, preventing uninitialized typography or visual layers from flashing on first load.
+
+The compiler validates these rules through the Hero Conversion Validator.

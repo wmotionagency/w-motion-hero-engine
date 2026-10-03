@@ -238,6 +238,7 @@ export function HeroShell({
   const [runtime, setRuntime] = useState<HeroRuntimeState>(() =>
     initialRuntime(spec),
   );
+  const [rendererReady, setRendererReady] = useState(false);
 
   const activeRenderer = selectRenderer(spec, runtime);
 
@@ -254,6 +255,7 @@ export function HeroShell({
     if (!zone || !stage) return;
 
     gsap.registerPlugin(ScrollTrigger);
+    setRendererReady(false);
 
     const unsubscribe = controller.subscribe((state) => setRuntime(state));
     const detected = controller.performance.detect();
@@ -272,8 +274,10 @@ export function HeroShell({
     void controller.mount(stage, renderer).then(() => {
       if (cancelled) return;
 
+      controller.scroll.setProgress(detected.reducedMotion ? 1 : 0);
+      setRendererReady(true);
+
       if (detected.reducedMotion) {
-        controller.scroll.setProgress(1);
         return;
       }
 
@@ -296,6 +300,7 @@ export function HeroShell({
 
     return () => {
       cancelled = true;
+      setRendererReady(false);
       window.removeEventListener("resize", onResize);
       trigger?.kill();
       unsubscribe();
@@ -331,6 +336,7 @@ export function HeroShell({
             data-renderer={spec.renderer}
             data-active-renderer={activeRenderer}
             data-preset={preset}
+            data-renderer-ready={rendererReady ? "true" : "false"}
           >
             {activeRenderer === "motion-2d" ? (
               <div
@@ -379,11 +385,13 @@ export function HeroShell({
             ) : null}
           </div>
 
-          <HeroTextLayer
-            cues={spec.textTimeline}
-            progress={runtime.progress}
-            reducedMotion={runtime.reducedMotion}
-          />
+          <div data-copy-ready={rendererReady ? "true" : "false"}>
+            <HeroTextLayer
+              cues={spec.textTimeline}
+              progress={runtime.progress}
+              reducedMotion={runtime.reducedMotion}
+            />
+          </div>
 
           <ScrollIndicator />
 

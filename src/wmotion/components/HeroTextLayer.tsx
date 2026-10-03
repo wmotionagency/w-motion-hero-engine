@@ -44,7 +44,7 @@ export function HeroTextLayer({
             {cue.eyebrow ? <small>{cue.eyebrow}</small> : null}
             {cue.headline ? <h1>{cue.headline}</h1> : null}
             {cue.body ? <p>{cue.body}</p> : null}
-            {cue.ctaLabel ? <HeroCTA label={cue.ctaLabel} /> : null}
+            {cue.ctaLabel ? <HeroCTA label={cue.ctaLabel} href={cue.ctaHref} /> : null}
           </div>
         );
       })}

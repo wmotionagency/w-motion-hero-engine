@@ -111,6 +111,18 @@ if (rejected.accepted) {
   throw new Error("Invalid Art Direction Plan should have been rejected.");
 }
 
+const invalidPersistentCtaPlan = structuredClone(automotiveDetailingPlan);
+invalidPersistentCtaPlan.conversionStrategy.persistentFinalCta = false;
+
+const rejectedPersistentCta = acceptArtDirectorOutput(
+  automotiveDetailingBrief,
+  invalidPersistentCtaPlan,
+);
+
+if (rejectedPersistentCta.accepted) {
+  throw new Error("Art Direction Plan without persistent final CTA should be rejected.");
+}
+
 const invalid3DPlan = structuredClone(immersiveProductPlan);
 invalid3DPlan.renderer.fallback = "immersive-3d";
 
@@ -149,6 +161,7 @@ console.log(
         elements: motionAccepted.heroSpec.motion2d?.elements.length ?? 0,
       },
       invalidPlanRejected: true,
+      invalidPersistentCtaRejected: true,
       invalid3DFallbackRejected: true,
     },
     null,

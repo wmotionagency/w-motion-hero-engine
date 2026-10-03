@@ -16,6 +16,7 @@ import {
   motionBrandPlan,
 } from "../src/wmotion/art-director/fixtures/motion-brand";
 import { heroSpecSchema } from "../src/wmotion/schemas/hero.schema";
+import { validateHeroConversion } from "../src/wmotion/validation/heroConversionValidator";
 import {
   clientAnalysisSchema,
   qaReportSchema,
@@ -103,6 +104,12 @@ const results = fixtures.map(({ name, brief, plan, renderer }) => {
   const heroSpec = compileArtDirectionPlan(plan);
   heroSpecSchema.parse(heroSpec);
 
+  const conversionValidation = validateHeroConversion(heroSpec);
+  assert(
+    conversionValidation.valid,
+    `${name}: compiled Hero Spec failed conversion validation.`,
+  );
+
   assert(heroSpec.renderer === renderer, `${name}: wrong primary renderer.`);
   assert(heroSpec.scenes.length >= 2, `${name}: missing scenes.`);
   assert(heroSpec.textTimeline.length >= 1, `${name}: missing text timeline.`);
@@ -148,6 +155,7 @@ const results = fixtures.map(({ name, brief, plan, renderer }) => {
     cinematicFallbackLayers: heroSpec.cinematic25d?.layers.length ?? 0,
     immersiveObjects: heroSpec.immersive3d?.objects.length ?? 0,
     mobileScrollLength: heroSpec.responsive.mobile?.scrollLength,
+    conversionScore: conversionValidation.score,
   };
 });
 

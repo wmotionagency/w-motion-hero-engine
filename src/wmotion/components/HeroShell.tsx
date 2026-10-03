@@ -300,7 +300,6 @@ export function HeroShell({
 
     return () => {
       cancelled = true;
-      setRendererReady(false);
       window.removeEventListener("resize", onResize);
       trigger?.kill();
       unsubscribe();

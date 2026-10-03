@@ -20,12 +20,26 @@ import { ScrollIndicator } from "./ScrollIndicator";
 
 function createRenderer(type: RendererType, spec: HeroSpec): HeroRenderer {
   if (type === "motion-2d") return new Motion2DRenderer();
-  if (type === "immersive-3d") return new Immersive3DRenderer();
+
+  if (type === "immersive-3d") {
+    return new Immersive3DRenderer(spec.immersive3d);
+  }
 
   return new Cinematic25DRenderer(
     spec.cinematic25d?.layers ?? [],
     spec.cinematic25d?.pointerStrength ?? 0.45,
   );
+}
+
+function webGL2Available() {
+  if (typeof document === "undefined") return true;
+
+  try {
+    const canvas = document.createElement("canvas");
+    return Boolean(canvas.getContext("webgl2"));
+  } catch {
+    return false;
+  }
 }
 
 function selectRenderer(spec: HeroSpec, state?: HeroRuntimeState): RendererType {
@@ -38,7 +52,14 @@ function selectRenderer(spec: HeroSpec, state?: HeroRuntimeState): RendererType 
     low: spec.performance.lowRenderer,
   } as const;
 
-  return byProfile[state.performance] ?? spec.renderer;
+  const selected = byProfile[state.performance] ?? spec.renderer;
+
+  if (selected === "immersive-3d" && !webGL2Available()) {
+    if (spec.cinematic25d?.layers.length) return "cinematic-25d";
+    return "motion-2d";
+  }
+
+  return selected;
 }
 
 function initialRuntime(spec: HeroSpec): HeroRuntimeState {
@@ -63,7 +84,12 @@ function LayerVisual({
   responsive: ResponsiveVariant;
 }) {
   if (layer.kind !== "image" || !layer.asset) {
-    return <span className={`cinematic-shape cinematic-shape--${layer.kind}`} aria-hidden="true" />;
+    return (
+      <span
+        className={`cinematic-shape cinematic-shape--${layer.kind}`}
+        aria-hidden="true"
+      />
+    );
   }
 
   const src =
@@ -77,7 +103,10 @@ function LayerVisual({
       : layer.asset.position;
 
   return (
-    <span className={`cinematic-asset cinematic-asset--${layer.role}`} aria-hidden="true">
+    <span
+      className={`cinematic-asset cinematic-asset--${layer.role}`}
+      aria-hidden="true"
+    >
       <Image
         src={src}
         alt={layer.asset.alt}
@@ -97,8 +126,15 @@ function LayerVisual({
 export function HeroShell({ spec }: { spec: HeroSpec }) {
   const zoneRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
-  const controller = useMemo(() => new HeroController(spec.scenes), [spec.scenes]);
-  const [runtime, setRuntime] = useState<HeroRuntimeState>(() => initialRuntime(spec));
+  const controller = useMemo(
+    () => new HeroController(spec.scenes),
+    [spec.scenes],
+  );
+  const [runtime, setRuntime] = useState<HeroRuntimeState>(() =>
+    initialRuntime(spec),
+  );
+
+  const activeRenderer = selectRenderer(spec, runtime);
 
   const scrollLength =
     runtime.responsive === "mobile"
@@ -116,15 +152,14 @@ export function HeroShell({ spec }: { spec: HeroSpec }) {
 
     const unsubscribe = controller.subscribe((state) => setRuntime(state));
     const detected = controller.performance.detect();
-    const renderer = createRenderer(
-      selectRenderer(spec, {
-        ...initialRuntime(spec),
-        performance: detected.profile,
-        responsive: detected.responsive,
-        reducedMotion: detected.reducedMotion,
-      }),
-      spec,
-    );
+    const detectedState: HeroRuntimeState = {
+      ...initialRuntime(spec),
+      performance: detected.profile,
+      responsive: detected.responsive,
+      reducedMotion: detected.reducedMotion,
+    };
+    const rendererType = selectRenderer(spec, detectedState);
+    const renderer = createRenderer(rendererType, spec);
 
     let trigger: ScrollTrigger | undefined;
     let cancelled = false;
@@ -171,28 +206,41 @@ export function HeroShell({ spec }: { spec: HeroSpec }) {
         ref={zoneRef}
         className="hero-scroll-zone"
         data-preset={preset}
-        style={{ "--hero-scroll-length": `${scrollLength}vh` } as React.CSSProperties}
+        data-active-renderer={activeRenderer}
+        style={
+          { "--hero-scroll-length": `${scrollLength}vh` } as React.CSSProperties
+        }
       >
         <div className="hero-sticky">
           <div
             ref={stageRef}
             className="hero-stage"
             data-renderer={spec.renderer}
+            data-active-renderer={activeRenderer}
             data-preset={preset}
           >
-            <div className="cinematic-world" data-preset={preset} aria-hidden="true">
-              {(spec.cinematic25d?.layers ?? []).map((layer) => (
-                <div
-                  key={layer.id}
-                  className={`cinematic-layer cinematic-layer--${layer.kind} cinematic-layer--role-${layer.role} ${layer.className ?? ""}`}
-                  data-layer-id={layer.id}
-                  data-role={layer.role}
-                  style={{ zIndex: Math.round(layer.depth * 100) }}
-                >
-                  <LayerVisual layer={layer} responsive={runtime.responsive} />
-                </div>
-              ))}
-            </div>
+            {activeRenderer === "cinematic-25d" ? (
+              <div
+                className="cinematic-world"
+                data-preset={preset}
+                aria-hidden="true"
+              >
+                {(spec.cinematic25d?.layers ?? []).map((layer) => (
+                  <div
+                    key={layer.id}
+                    className={`cinematic-layer cinematic-layer--${layer.kind} cinematic-layer--role-${layer.role} ${layer.className ?? ""}`}
+                    data-layer-id={layer.id}
+                    data-role={layer.role}
+                    style={{ zIndex: Math.round(layer.depth * 100) }}
+                  >
+                    <LayerVisual
+                      layer={layer}
+                      responsive={runtime.responsive}
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : null}
           </div>
 
           <HeroTextLayer
@@ -206,13 +254,16 @@ export function HeroShell({ spec }: { spec: HeroSpec }) {
           <aside className="hero-debug" aria-label="Hero engine debug">
             <span>Progress: {runtime.progress.toFixed(3)}</span>
             <span>Scene: {runtime.sceneState.scene.id}</span>
-            <span>Local Progress: {runtime.sceneState.localProgress.toFixed(3)}</span>
+            <span>
+              Local Progress: {runtime.sceneState.localProgress.toFixed(3)}
+            </span>
             <span>Performance: {runtime.performance}</span>
             <span>Responsive: {runtime.responsive}</span>
-            <span>Renderer: {selectRenderer(spec, runtime)}</span>
+            <span>Renderer: {activeRenderer}</span>
             <span>Preset: {preset}</span>
             <span>
-              Pointer: {runtime.pointer.x.toFixed(2)}, {runtime.pointer.y.toFixed(2)}
+              Pointer: {runtime.pointer.x.toFixed(2)},{" "}
+              {runtime.pointer.y.toFixed(2)}
             </span>
           </aside>
         </div>

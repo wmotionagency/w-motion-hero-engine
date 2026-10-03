@@ -377,6 +377,7 @@ button, a { font: inherit; }
 .motion2d-line,
 .motion2d-svg-mark,
 .motion2d-rive-placeholder,
+.motion2d-text,
 .motion2d-asset {
   position: relative;
   display: block;
@@ -525,5 +526,28 @@ button, a { font: inherit; }
 
   .motion2d-rive-placeholder {
     width: 68vw;
+  }
+}
+
+
+.motion2d-text {
+  display: block;
+  width: max-content;
+  max-width: 92vw;
+  color: #f5f5f2;
+  font-size: clamp(3rem, 11vw, 10rem);
+  font-weight: 700;
+  line-height: .82;
+  letter-spacing: -.065em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-align: center;
+  user-select: none;
+}
+
+@media (max-width: 767px) {
+  .motion2d-text {
+    max-width: 96vw;
+    font-size: clamp(2.5rem, 18vw, 6rem);
   }
 }

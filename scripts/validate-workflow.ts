@@ -159,6 +159,25 @@ const results = fixtures.map(({ name, brief, plan, renderer }) => {
   };
 });
 
+const invalidConversionHero = structuredClone(
+  compileArtDirectionPlan(automotiveDetailingPlan),
+);
+const invalidFinalCue = invalidConversionHero.textTimeline.find(
+  (cue) => cue.final,
+);
+if (!invalidFinalCue) {
+  throw new Error("Expected a final conversion cue in compiled Hero Spec.");
+}
+invalidFinalCue.persist = false;
+
+const invalidConversionResult = validateHeroConversion(
+  invalidConversionHero,
+);
+assert(
+  !invalidConversionResult.valid,
+  "Hero conversion validator must reject a non-persistent final CTA.",
+);
+
 console.log(
   JSON.stringify(
     {
@@ -171,6 +190,7 @@ console.log(
         qaReport: true,
       },
       clientAnalysisToBrief: true,
+      nonPersistentHeroRejected: true,
       artDirectionTemplateScore: templateValidation.score,
       fixtures: results,
     },

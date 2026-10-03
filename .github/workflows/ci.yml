@@ -24,5 +24,8 @@ jobs:
       - name: Validate Art Director
         run: npm run validate:art-director
 
+      - name: Validate Work Workflow
+        run: npm run validate:workflow
+
       - name: Build
         run: npm run build

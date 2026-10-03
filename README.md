@@ -5,7 +5,8 @@ Reusable architecture for scroll-driven W Motion hero experiences.
 ## Current status
 
 Step 1 — engine core ✅  
-Step 2 — Cinematic 2.5D renderer ✅
+Step 2 — configurable Cinematic 2.5D renderer ✅  
+Step 3 — real asset pipeline for Cinematic 2.5D ✅
 
 ## Core capabilities
 
@@ -20,16 +21,14 @@ Step 2 — Cinematic 2.5D renderer ✅
 - desktop/tablet/mobile overrides;
 - `prefers-reduced-motion` fallback;
 - common renderer contract;
-- placeholders for Motion 2D and Immersive 3D;
-- production-configurable Cinematic 2.5D renderer;
 - Zod-based Hero Spec;
 - GitHub Actions build verification.
 
 ## Cinematic 2.5D
 
-The 2.5D renderer is driven by Hero Spec data rather than hard-coded animation.
+The renderer is driven by Hero Spec data rather than hard-coded timelines.
 
-Supported visual primitives:
+### CSS primitives
 
 - glow
 - perspective grid
@@ -38,57 +37,115 @@ Supported visual primitives:
 - glass panel
 - light beam
 
+### Real image layers
+
+Image layers now support:
+
+- background assets;
+- transparent subjects;
+- foreground overlays;
+- `cover` / `contain`;
+- object position;
+- preload + decode;
+- mobile-specific asset replacement;
+- mobile-specific positioning;
+- role-specific sizing.
+
+### Layer animation
+
 Each layer can define:
 
-- depth
-- pointer parallax
-- keyframes
-- x / y
-- scale
-- rotation
-- opacity
-- blur
-- mobile overrides
-- mobile visibility
+- depth;
+- pointer parallax;
+- global keyframes;
+- x / y;
+- scale;
+- rotation;
+- opacity;
+- blur;
+- blend mode;
+- mobile overrides.
 
-Example:
+### Scene activation
 
-```ts
-{
-  id: "hero-orb",
-  kind: "orb",
-  depth: 0.62,
-  parallax: 24,
-  keyframes: [
-    { at: 0, x: 28, y: 8, scale: 0.42, opacity: 0.15 },
-    { at: 0.58, x: -10, y: -4, scale: 1.18, opacity: 1 },
-    { at: 1, x: -36, y: -12, scale: 2.2, opacity: 0 }
-  ]
-}
+Layers can be scoped to:
+
+- named scenes;
+- a global progress range;
+- both together.
+
+This makes it possible to replace one visual subject with another as the scroll narrative advances.
+
+### Reveal system
+
+Supported reveals:
+
+- fade;
+- horizontal wipe;
+- vertical wipe;
+- circular reveal.
+
+Every reveal is scrubbed and reversible.
+
+### Art direction presets
+
+The Hero Spec can declare:
+
+- `neutral`;
+- `luxury-dark`;
+- `editorial-light`;
+- `product-reveal`;
+- `spatial-ui`.
+
+These presets form the first art-direction layer that the future AI director can choose automatically.
+
+## Current demo
+
+The demo now behaves like a small commercial product hero:
+
+```
+Scene 1 — ARRIVAL
+background appears
+subject is revealed
+
+        ↓
+
+Scene 2 — DEPTH SHIFT
+subject moves toward camera
+foreground atmosphere moves independently
+light passes through frame
+
+        ↓
+
+Scene 3 — REVEAL
+previous subject exits
+new graphic scene activates
+headline + CTA resolve
 ```
 
-The renderer interpolates continuously between keyframes using the same global progress value that controls scenes and text.
+The subject, background and foreground are separate assets and remain independent from the text timeline.
 
 ## Architecture
 
 ```
-Browser scroll
+Hero Spec
+   │
+   ├── scenes
+   ├── text timeline
+   ├── visual layers
+   │      ├── CSS primitives
+   │      └── image assets
+   │
    ↓
-ScrollTrigger
+Hero Controller
    ↓
-ScrollController
-   ↓
-HeroController
-   ├── SceneController
-   ├── InteractionController
-   ├── PerformanceManager
-   └── Renderer contract
-          ├── Motion 2D
-          ├── Cinematic 2.5D
-          └── Immersive 3D
+Cinematic 2.5D Renderer
+   ├── keyframe interpolation
+   ├── scene visibility
+   ├── reveal masks
+   ├── pointer parallax
+   └── responsive overrides
 ```
-
-Renderers do **not** know about ScrollTrigger.
 
 ## Run locally
 
@@ -105,14 +162,18 @@ npm run build
 
 ## Next step
 
-Step 3 will make Cinematic 2.5D production-ready for real client assets by adding:
+The next major step is the **Art Direction layer**.
 
-- image / transparent subject layers;
-- mask and reveal primitives;
-- asset loading;
-- scene-specific activation;
-- richer transitions;
-- art-direction presets;
-- stronger mobile adaptation.
+Instead of manually writing the Hero Spec, the system will start accepting a creative brief and converting it into:
 
-After that, the system can start accepting art-directed real-world hero concepts rather than abstract demo geometry.
+- visual concept;
+- hero moment;
+- scene sequence;
+- recommended renderer;
+- asset list;
+- layer hierarchy;
+- reveal choices;
+- mobile simplification;
+- initial Hero Spec.
+
+That will be the beginning of the automated W Motion Art Director.

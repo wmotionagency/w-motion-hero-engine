@@ -4,6 +4,8 @@ export const halleMilanoAnalysis = clientAnalysisSchema.parse({
   projectId: "halle-milano-hero",
   sourceUrl: "https://www.hallemilano.com/",
   brandName: "Halle",
+  contentLanguage: "it",
+  market: "IT",
   businessType: "Hair studio with a connected cultural and creative program",
   location: "Via Mantova 17, Milano",
   offer: "Genderless cuts, color, bleaching and styling with a strong identity-led approach",
